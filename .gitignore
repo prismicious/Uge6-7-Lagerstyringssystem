@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/Lagerstyring/.vs/Lagerstyring
+/Lagerstyring/Lagerstyring/obj
+/Lagerstyring/Lagerstyring/bin/Debug/net9.0

@@ -1,4 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using StorageSystem;
+using StorageSystem.Models;
 
-// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+class Program
+{
+    static void Main(string[] args)
+    {
+        using (var context = new StorageContext())
+        {
+            context.Database.EnsureCreated();
+
+            context.SaveChanges();
+        }
+
+        Console.WriteLine("Hello World!");
+    }
+}

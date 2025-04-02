@@ -3,9 +3,8 @@
 ################################################################################
 
 /.vs
-/Lagerstyring/.vs/Lagerstyring
-/Lagerstyring/Lagerstyring/obj
-/Lagerstyring/Lagerstyring/bin/Debug/net9.0
 /StorageSystem/.vs
 /StorageSystem/StorageSystem/obj
 /StorageSystem/StorageSystem/bin
+/StorageSystem/StorageSystemTest/bin
+/StorageSystem/StorageSystemTest/obj

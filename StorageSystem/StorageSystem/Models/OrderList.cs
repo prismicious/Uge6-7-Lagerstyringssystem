@@ -9,6 +9,7 @@ namespace StorageSystem.Models
         public int ID { get; set; }
         public ICollection<Order> Orders { get; set; }
 
+        public int TransactionID { get; set; }
         public Transaction Transaction { get; set; }
     }
 }

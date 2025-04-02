@@ -10,7 +10,7 @@ namespace StorageSystem.Services
 {
     internal class ProductService
     {
-        static List<Product> GetProducts()
+        static List<ProductA> GetProducts()
         {
             using (var ctx = new StorageContext())
             {
@@ -22,7 +22,7 @@ namespace StorageSystem.Services
         {
             using (var ctx = new StorageContext())
             {
-                ctx.Products.Add(new Product { Price = 1.0m, Name = "test", Type = "meh" });
+                ctx.Products.Add(new ProductA { Price = 1.0m, Name = "test", Type = "meh" });
                 ctx.SaveChanges();
             }
         }

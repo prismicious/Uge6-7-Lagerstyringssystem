@@ -5,7 +5,7 @@ namespace StorageSystem
 {
     public class StorageContext : DbContext
     {
-        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductA> Products { get; set; }
         public DbSet<ProductStatus> ProductStatuses { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }

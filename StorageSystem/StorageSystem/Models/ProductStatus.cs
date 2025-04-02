@@ -7,7 +7,7 @@
         public int Reserved { get; set; }
 
         public int ProductID { get; set; }
-        public Product Product { get; set; }
+        public ProductA Product { get; set; }
         public Warehouse Warehouse { get; set; }
     }
 }

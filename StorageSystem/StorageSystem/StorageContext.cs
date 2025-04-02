@@ -5,13 +5,6 @@ namespace StorageSystem
 {
     public class StorageContext : DbContext
     {
-        public StorageContext()
-        {
-        }
-
-        public StorageContext(DbContextOptions<StorageContext> options) : base(options)
-        {
-        }
 
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductStatus> ProductStatuses { get; set; }
@@ -23,9 +16,6 @@ namespace StorageSystem
         public DbSet<Customer> Customers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            if (!options.IsConfigured)
-                options.UseSqlite("Data Source=storage.sqlite");
-        }
+            => options.UseSqlite("Data Source=storage.sqlite");
     }
 }

@@ -10,7 +10,7 @@ namespace StorageSystem.Services
 {
     public class FakerService
     {
-        public static void GenerateAndPopulate(StorageContext ctx, int productCount, int customerCount)
+        public static void GenerateAndPopulate(int productCount, int customerCount)
         {
             // Helper method to create a Faker<Product> for a specific category
             Faker<Product> CreateProductFaker(string category, string[] names, decimal minPrice, decimal maxPrice)
@@ -47,9 +47,13 @@ namespace StorageSystem.Services
                 .RuleFor(c => c.Type, f => f.Random.Number(0, 2)); // 0: Customer, 1: Business, 2: Warehouse
             var customers = customerFaker.Generate(customerCount);
 
-            ctx.Products.AddRange(products);
-            ctx.Customers.AddRange(customers);
-            ctx.SaveChanges();
+            using (var ctx = new StorageContext())
+            {
+                // Add products and customers to the context
+                ctx.Products.AddRange(products);
+                ctx.Customers.AddRange(customers);
+                ctx.SaveChanges();
+            }
         }
     }
 }

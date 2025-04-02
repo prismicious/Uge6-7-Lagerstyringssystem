@@ -1,8 +1,9 @@
-name: Run Tests on Deploy
+name: Run Tests on Push
 
 on:
-  deployment:
-    types: [created]
+  push:  # Trigger on push to any branch
+    branches:
+      - '**'
 
 jobs:
   run-tests:

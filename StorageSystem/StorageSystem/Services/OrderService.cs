@@ -25,11 +25,15 @@ namespace StorageSystem.Services
             }
         }
 
-        public static Order Create(int quantity, decimal discount, decimal price)
+        public static Order Create(OrderList list, Product p, int quantity, decimal discount, decimal price)
         {
             using (var ctx = new StorageContext())
             {
-                var order = new Order { Quantity = quantity, Discount = discount, Price = price};
+                if (list.Orders == null)
+                    list.Orders = new List<Order>();
+
+                var order = new Order { Quantity = quantity, Discount = discount, Price = price, ProductID = p.ID, OrderListID = list.ID };
+                list.Orders.Add(order);
                 ctx.Orders.Add(order);
                 ctx.SaveChanges();
                 return order;
@@ -37,10 +41,12 @@ namespace StorageSystem.Services
         }
 
         // Updates an order. Returns true if the database was updated.
-        public static bool Update(Order order, int? quantity, decimal? discount, decimal? price)
+        public static bool Update(Order order, Product? product = null, int? quantity = null, decimal? discount = null, decimal? price = null)
         {
             using (var ctx = new StorageContext())
             {
+                if (product != null)
+                    order.Product = product;
                 if (quantity.HasValue)
                     order.Quantity = quantity.Value;
                 if (price.HasValue)

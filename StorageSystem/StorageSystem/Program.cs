@@ -11,8 +11,8 @@ class Program
         using (var context = new StorageContext())
         {
             bool isCreated = context.Database.EnsureCreated();
-            if (isCreated) 
-                FakerService.GenerateAndPopulate(productsToGenerate, customersToGenerate);
+            if (isCreated)
+                FakerService.GenerateAndPopulate(context, productsToGenerate, customersToGenerate);
         }
 
         Console.WriteLine($"Inserted {productsToGenerate} generated products and {customersToGenerate} generated customers into the database.");

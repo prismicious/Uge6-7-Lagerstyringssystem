@@ -8,17 +8,9 @@ using StorageSystem.Models;
 
 namespace StorageSystem.Services
 {
-    internal class FakerService
+    public class FakerService
     {
-        public static void InsertData()
-        {
-            using (StorageContext ctx = new StorageContext())
-            {
-
-            }
-        }
-
-        public static void GenerateAndPopulate(int productCount, int customerCount)
+        public static void GenerateAndPopulate(StorageContext ctx, int productCount, int customerCount)
         {
             // Helper method to create a Faker<Product> for a specific category
             Faker<Product> CreateProductFaker(string category, string[] names, decimal minPrice, decimal maxPrice)
@@ -55,8 +47,6 @@ namespace StorageSystem.Services
                 .RuleFor(c => c.Type, f => f.Random.Number(0, 2)); // 0: Customer, 1: Business, 2: Warehouse
             var customers = customerFaker.Generate(customerCount);
 
-            // Save to database
-            using var ctx = new StorageContext();
             ctx.Products.AddRange(products);
             ctx.Customers.AddRange(customers);
             ctx.SaveChanges();

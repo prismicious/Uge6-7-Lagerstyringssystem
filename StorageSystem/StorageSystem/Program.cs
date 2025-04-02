@@ -6,6 +6,12 @@ using StorageSystem.Models;
 public class StorageContext : DbContext
 {
     public DbSet<Product> Products { get; set; }
+    public DbSet<ProductStatus> ProductStatuses { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Warehouse> Warehouses { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<OrderList> OrderLists { get; set; }
+    public DbSet<Receipt> Receipts { get; set; }
 
     public string DbPath { get; }
 
@@ -20,4 +26,9 @@ public class StorageContext : DbContext
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite($"Data Source={DbPath}");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+    }
 }

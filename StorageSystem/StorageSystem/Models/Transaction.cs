@@ -12,6 +12,7 @@ namespace StorageSystem.Models
     {
         public int ID { get; set; }
         public DateTime Date { get; set; }
+        public int Type { get; set; }
 
         public OrderList OrderList { get; set; }
         public Receipt Receipt { get; set; }

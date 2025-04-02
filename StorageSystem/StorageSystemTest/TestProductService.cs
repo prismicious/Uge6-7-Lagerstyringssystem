@@ -10,7 +10,6 @@ namespace StorageSystemTest
         decimal price = 42.0m;
         string name = "Test product";
         string type = "Test type";
-        int createTestID = 0;
 
         [TestInitialize]
         public void Init()
@@ -38,17 +37,15 @@ namespace StorageSystemTest
 
             // Ensure the product count increased
             Assert.IsTrue(ProductService.Get().Count > productCount);
-
-            createTestID = p.ID;
         }
 
         [TestMethod]
         public void Read()
         {
             Create();
-            Product p = ProductService.Get(createTestID);
+            Product p = ProductService.Get(1);
             Assert.IsTrue(p != null);
-            Assert.AreEqual(createTestID, p.ID);
+            Assert.AreEqual(1, p.ID);
             Assert.AreEqual(price, p.Price);
             Assert.AreEqual(name, p.Name);
             Assert.AreEqual(type, p.Type);

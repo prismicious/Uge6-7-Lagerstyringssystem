@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace StorageSystem.Models
+﻿namespace StorageSystem.Models
 {
     public class ProductStatus
     {

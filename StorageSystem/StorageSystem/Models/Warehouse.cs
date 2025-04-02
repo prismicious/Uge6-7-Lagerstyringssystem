@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace StorageSystem.Models
+﻿namespace StorageSystem.Models
 {
     public class Warehouse
     {

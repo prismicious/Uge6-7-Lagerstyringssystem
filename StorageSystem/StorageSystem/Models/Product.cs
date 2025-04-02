@@ -1,12 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StorageSystem.Models
+﻿namespace StorageSystem.Models
 {
     public class Product
     {
@@ -14,7 +6,5 @@ namespace StorageSystem.Models
         public decimal Price { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
-
-        public ProductStatus ProductStatus { get; set; }
     }
 }

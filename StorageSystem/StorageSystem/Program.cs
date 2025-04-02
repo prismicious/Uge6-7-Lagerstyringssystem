@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using StorageSystem;
+﻿using StorageSystem;
+using StorageSystem.Models;
+
 class Program
 {
     static void Main(string[] args)
@@ -8,6 +8,8 @@ class Program
         using (var context = new StorageContext())
         {
             context.Database.EnsureCreated();
+
+            context.SaveChanges();
         }
 
         Console.WriteLine("Hello World!");

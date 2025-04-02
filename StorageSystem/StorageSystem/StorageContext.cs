@@ -12,6 +12,7 @@ namespace StorageSystem
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<OrderList> OrderLists { get; set; }
         public DbSet<Receipt> Receipts { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
 
         // The following configures EF to create a Sqlite database.

@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace StorageSystem.Models
+﻿namespace StorageSystem.Models
 {
     public class Order
     {
@@ -9,7 +6,7 @@ namespace StorageSystem.Models
         public int Quantity { get; set; }
         public decimal Discount { get; set; }
         public decimal Price { get; set; }
- 
+
         public Product Product { get; set; }
         public OrderList OrderList { get; set; }
     }

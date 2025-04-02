@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace StorageSystem.Models
+﻿namespace StorageSystem.Models
 {
     public class OrderList
     {
@@ -11,5 +7,8 @@ namespace StorageSystem.Models
 
         public int TransactionID { get; set; }
         public Transaction Transaction { get; set; }
+
+        public int CustomerID { get; set; }
+        public Customer Customer { get; set; }
     }
 }

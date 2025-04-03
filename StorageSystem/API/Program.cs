@@ -5,24 +5,26 @@ using StorageSystem.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer(); // Adds support for API endpoints
+builder.Services.AddSwaggerGen(); // Generates Swagger documentation
 
-builder.Services.AddControllers(); // Add controllers to the service container
+builder.Services.AddControllers(); // Registers controllers
 
 var app = builder.Build();
+
+// Generate fake data -- This is not permanent.
 FakerService.Generate();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(); // Enables Swagger in development mode
+    app.UseSwaggerUI(); // Enables Swagger UI in development mode
 }
 
-app.UseHttpsRedirection();
+app.UseHttpsRedirection(); // Redirects HTTP requests to HTTPS
 
-app.MapControllers(); 
+app.MapControllers(); // Maps incoming requests to controllers
 
 app.Run();
 public partial class Program { }

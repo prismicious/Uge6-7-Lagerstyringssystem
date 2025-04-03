@@ -61,67 +61,78 @@ namespace StorageSystemTest
         [TestMethod]
         public void Create()
         {
-            using (var ctx = new StorageContext())
-            {
-                // Create an order list for the test customer
-                var orderList = OrderListService.Create(testCustomer);
-                Assert.IsNotNull(orderList);
-                Assert.IsTrue(orderList.ID > 0);
-                Assert.AreEqual(testCustomer.ID, orderList.CustomerID);
+            // Create an order list for the test customer
+            var orderList = OrderListService.Create(testCustomer);
+            Assert.IsNotNull(orderList);
+            Assert.IsTrue(orderList.ID > 0);
+            Assert.AreEqual(testCustomer.ID, orderList.CustomerID);
 
-                // Ensure the order list is saved in the database
-                var savedOrderList = OrderListService.Get(orderList.ID);
-                Assert.IsNotNull(savedOrderList);
-                Assert.AreEqual(orderList.CustomerID, savedOrderList.CustomerID);
-            }
+            // Ensure the order list is saved in the database
+            var savedOrderList = OrderListService.Get(orderList.ID);
+            Assert.IsNotNull(savedOrderList);
+            Assert.AreEqual(orderList.CustomerID, savedOrderList.CustomerID);
         }
 
         [TestMethod]
         public void AddOrder()
         {
-            using (var ctx = new StorageContext())
-            {
-                // Create an order list for the test customer
-                var orderList = OrderListService.Create(testCustomer);
-                Assert.IsNotNull(orderList);
+            // Create an order list for the test customer
+            var orderList = OrderListService.Create(testCustomer);
+            Assert.IsNotNull(orderList);
 
-                // Create a test order
-                var order = OrderService.Create(orderList, testProduct, 1, 1, 1);
-                orderList = OrderListService.AddOrder(orderList, order);
+            // Create a test order
+            var order = OrderService.Create(orderList, testProduct, 1, 1, 1);
+            orderList = OrderListService.AddOrder(orderList, order);
 
-                // Ensure the order is added to the order list
-                var fetchedOrderList = OrderListService.Get(orderList.ID);
-                Assert.AreEqual(fetchedOrderList.ID, order.OrderListID);
+            // Ensure the order is added to the order list
+            var fetchedOrderList = OrderListService.Get(orderList.ID);
+            Assert.AreEqual(fetchedOrderList.ID, order.OrderListID);
 
-                var fetchedOrder = fetchedOrderList.Orders.Where(o => o.ID == order.ID).Single();
-                Assert.AreEqual(fetchedOrder.OrderListID, order.OrderListID);
-            }
+            var fetchedOrder = fetchedOrderList.Orders.Where(o => o.ID == order.ID).Single();
+            Assert.AreEqual(fetchedOrder.OrderListID, order.OrderListID);
+        }
+
+        [TestMethod]
+        public void AddOrders()
+        {
+            // Create an order list for the test customer
+            var orderList = OrderListService.Create(testCustomer);
+            Assert.IsNotNull(orderList);
+
+            // Create test orders
+            List<Order> orders = new() {
+                OrderService.Create(orderList, testProduct, 1, 1, 1),
+                OrderService.Create(orderList, testProduct, 2, 2, 2),
+                OrderService.Create(orderList, testProduct, 3, 3, 3)
+            };
+            orderList = OrderListService.AddOrders(orderList, orders);
+
+            // Ensure the orders are added to the order list
+            var fetchedOrderList = OrderListService.Get(orderList.ID);
+            Assert.AreEqual(fetchedOrderList.Orders.Count, orders.Count);
         }
 
         [TestMethod]
         public void RemoveOrder()
         {
-            using (var ctx = new StorageContext())
-            {
-                // Create an order list for the test customer
-                var orderList = OrderListService.Create(testCustomer);
-                Assert.IsNotNull(orderList);
+            // Create an order list for the test customer
+            var orderList = OrderListService.Create(testCustomer);
+            Assert.IsNotNull(orderList);
 
-                // Create a test order
-                var order = OrderService.Create(orderList, testProduct, 1, 1, 1);
-                orderList = OrderListService.AddOrder(orderList, order);
+            // Create a test order
+            var order = OrderService.Create(orderList, testProduct, 1, 1, 1);
+            orderList = OrderListService.AddOrder(orderList, order);
 
-                // Ensure the order is added to the order list
-                var fetchedOrderList = OrderListService.Get(orderList.ID);
-                Assert.AreEqual(fetchedOrderList.ID, order.OrderListID);
+            // Ensure the order is added to the order list
+            var fetchedOrderList = OrderListService.Get(orderList.ID);
+            Assert.AreEqual(fetchedOrderList.ID, order.OrderListID);
 
-                // Remove the order from the order list
-                orderList = OrderListService.RemoveOrder(orderList, order);
+            // Remove the order from the order list
+            orderList = OrderListService.RemoveOrder(orderList, order);
 
-                // Ensure the order is removed from the order list
-                fetchedOrderList = OrderListService.Get(orderList.ID);
-                Assert.IsFalse(fetchedOrderList.Orders.Any(o => o.ID == order.ID));
-            }
+            // Ensure the order is removed from the order list
+            fetchedOrderList = OrderListService.Get(orderList.ID);
+            Assert.IsFalse(fetchedOrderList.Orders.Any(o => o.ID == order.ID));
         }
     }
 }

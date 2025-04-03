@@ -3,7 +3,7 @@ name: Run Tests on Push and Pull Request
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "yaml_test" ]
   pull_request:
     branches: [ "main" ]
 

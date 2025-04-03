@@ -16,6 +16,5 @@ namespace StorageSystem.Models
 
         public ICollection<OrderList> OrderLists;
         public ICollection<Receipt> Receipts;
-
     }
 }

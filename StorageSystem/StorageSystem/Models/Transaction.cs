@@ -6,6 +6,7 @@
         public DateTime Date { get; set; }
         public int Type { get; set; }
 
+        public int OrderListID { get; set; }
         public OrderList OrderList { get; set; }
         public Receipt Receipt { get; set; }
         public Warehouse Warehouse { get; set; }

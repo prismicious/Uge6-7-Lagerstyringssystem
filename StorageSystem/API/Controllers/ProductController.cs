@@ -15,9 +15,18 @@ namespace API.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var products = ProductService.Get();
-            // Returns 200 OK
-            return Ok(products);
+            try
+            {
+                var products = ProductService.Get();
+                // Returns 200 OK
+                return Ok(products);
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error in GetAll: {e.Message}");
+                return StatusCode(500, "An error occurred while retrieving products.");
+            }
         }
 
         [HttpGet("{id}")]
@@ -33,31 +42,55 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] Product product)
         {
-            var createdProduct = ProductService.Create(product.Price, product.Name, product.Type);
-            // Returns 201 Created with the location of the new resource in the header
-            return CreatedAtAction(nameof(GetById), new { id = createdProduct.ID }, createdProduct);
+            try
+            {
+                var createdProduct = ProductService.Create(product.Price, product.Name, product.Type);
+                // Returns 201 Created with the location of the new resource in the header
+                return CreatedAtAction(nameof(GetById), new { id = createdProduct.ID }, createdProduct);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error in Create: {e.Message}");
+                return StatusCode(500, "An error occurred while creating the product.");
+            }
         }
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] Product product)
         {
-            var existingProduct = ProductService.Get(id);
-            if (existingProduct == null)
-                return NotFound();
+            try
+            {
+                var existingProduct = ProductService.Get(id);
+                if (existingProduct == null)
+                    return NotFound();
 
-            ProductService.Update(existingProduct, product.Price, product.Name, product.Type);
-            return NoContent();
+                ProductService.Update(existingProduct, product.Price, product.Name, product.Type);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error in Update: {e.Message}");
+                return StatusCode(500, "An error occurred while updating the product.");
+            }
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var product = ProductService.Get(id);
-            if (product == null)
-                return NotFound();
+            try
+            {
+                var product = ProductService.Get(id);
+                if (product == null)
+                    return NotFound();
 
-            ProductService.Remove(product);
-            return NoContent();
+                ProductService.Remove(product);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error in Delete: {e.Message}");
+                return StatusCode(500, "An error occurred while deleting the product.");
+            }
         }
     }
 }

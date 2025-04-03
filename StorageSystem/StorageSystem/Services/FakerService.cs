@@ -62,13 +62,10 @@ namespace StorageSystem.Services
             int customersToGenerate = 20;
             using (var context = new StorageContext())
             {
-                bool isCreated = context.Database.EnsureCreated();
-                if (isCreated)
-                    GenerateAndPopulate(productsToGenerate, customersToGenerate);
+                context.Database.EnsureCreated(); // Ensure the database is created
+                GenerateAndPopulate(productsToGenerate, customersToGenerate); // Always populate the database
+                Console.WriteLine($"Inserted {productsToGenerate} generated products and {customersToGenerate} generated customers into the database.");
             }
-
-
-            Console.WriteLine($"Inserted {productsToGenerate} generated products and {customersToGenerate} generated customers into the database.");
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace StorageSystem.Models
+﻿namespace StorageSystem.Models
 {
     public class Customer
     {

@@ -18,11 +18,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
-    - name: navigate to project directory
-      run: cd StorageSystem
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Build and test
+      run: |
+        cd StorageSystem
+        dotnet restore
+        dotnet build --no-restore
+        dotnet test --no-build --verbosity normal

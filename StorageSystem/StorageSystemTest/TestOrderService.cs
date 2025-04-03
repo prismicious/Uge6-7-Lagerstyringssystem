@@ -10,7 +10,7 @@ namespace StorageSystemTest
         int quantity = 12;
         decimal discount = 1.0m;
         decimal price = 42.0m;
-        int createTestID = 0;
+        int lastCreatedOrderID = 0;
 
         Customer testCustomer = new Customer { Name = "Test", Email = "", Address = "" };
         Product testProduct = new Product { Name = "Order test product", Price = 1.0m, Type = "Test product" };
@@ -54,16 +54,19 @@ namespace StorageSystemTest
             // Ensure the order count increased
             Assert.IsTrue(OrderService.Get().Count == 1 + count);
 
-            createTestID = order.ID;
+            // Save the order ID for later use
+            lastCreatedOrderID = order.ID;
         }
 
         [TestMethod]
         public void Read()
         {
             Create();
-            Order order = OrderService.Get(createTestID);
+
+            Order order = OrderService.Get(lastCreatedOrderID);
+
             Assert.IsTrue(order != null);
-            Assert.AreEqual(createTestID, order.ID);
+            Assert.AreEqual(lastCreatedOrderID, order.ID);
             Assert.AreEqual(quantity, order.Quantity);
             Assert.AreEqual(discount, order.Discount);
             Assert.AreEqual(price, order.Price);
@@ -72,13 +75,15 @@ namespace StorageSystemTest
         [TestMethod]
         public void Update()
         {
+            // Create a new order
             Order order = OrderService.Create(testOrderList, testProduct, 3, 1.22m, 123.45m);
 
+            // Update the order's price
             var newPrice = 100.00m;
             bool updated = OrderService.Update(order, price: newPrice);
             Assert.IsTrue(updated);
 
-            // Re-load the order from the db
+            // Re-load the order from the db and verify new price
             order = OrderService.Get(order.ID);
             Assert.AreEqual(newPrice, order.Price);
         }
@@ -86,8 +91,13 @@ namespace StorageSystemTest
         [TestMethod]
         public void Delete()
         {
+            // Make a new order
             Create();
-            var order = OrderService.Get().First();
+
+            // Get the order from the db
+            var order = OrderService.Get(lastCreatedOrderID);
+
+            // Delete it
             Assert.IsTrue(OrderService.Remove(order));
         }
     }

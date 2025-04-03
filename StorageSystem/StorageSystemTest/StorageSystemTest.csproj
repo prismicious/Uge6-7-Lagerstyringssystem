@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StorageSystem\StorageSystem.csproj" />
+    <ProjectReference Include="..\StorageSystem\API\API.csproj" />
   </ItemGroup>
 
   <ItemGroup>

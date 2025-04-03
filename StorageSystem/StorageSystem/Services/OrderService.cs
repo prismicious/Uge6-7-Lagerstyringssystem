@@ -36,19 +36,10 @@ namespace StorageSystem.Services
         }
 
         // Updates an order. Returns true if the database was updated.
-        public static bool Update(Order order, Product? product = null, int? quantity = null, decimal? discount = null, decimal? price = null)
+        public static bool Update(Order order)
         {
             using (var ctx = new StorageContext())
             {
-                if (product != null)
-                    order.Product = product;
-                if (quantity.HasValue)
-                    order.Quantity = quantity.Value;
-                if (price.HasValue)
-                    order.Price = price.Value;
-                if (discount.HasValue)
-                    order.Discount = discount.Value;
-
                 ctx.Orders.Update(order);
                 return 1 == ctx.SaveChanges();
             }

@@ -79,8 +79,9 @@ namespace StorageSystemTest
             Order order = OrderService.Create(testOrderList, testProduct, 3, 1.22m, 123.45m);
 
             // Update the order's price
-            var newPrice = 100.00m;
-            bool updated = OrderService.Update(order, price: newPrice);
+            const decimal newPrice = 99.99m;
+            order.Price = newPrice;
+            bool updated = OrderService.Update(order);
             Assert.IsTrue(updated);
 
             // Re-load the order from the db and verify new price

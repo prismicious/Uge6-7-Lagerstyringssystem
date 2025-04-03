@@ -47,6 +47,26 @@ namespace StorageSystem.Services
         // Removes a product from the database. Returns true if successfully removed from database.
         public static bool Remove(Product p)
         {
+            if (p.ID == 0 || Get(p.ID) == null)
+                return false;
+
+            using (var ctx = new StorageContext())
+            {
+                ctx.Products.Remove(p);
+                return 1 == ctx.SaveChanges();
+            }
+        }
+
+        // Removes a product from the database. Returns true if successfully removed from database.
+        public static bool Remove(int ID)
+        {
+            if (ID == 0)
+                return false;
+
+            Product? p = Get(ID);
+            if (p == null)
+                return false;
+
             using (var ctx = new StorageContext())
             {
                 ctx.Products.Remove(p);

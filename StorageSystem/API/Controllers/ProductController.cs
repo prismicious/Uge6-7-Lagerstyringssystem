@@ -130,12 +130,10 @@ namespace API.Controllers
         {
             try
             {
-                Product? product = ProductService.Get(id);
-                if (product == null)
+                if (!ProductService.Remove(id))
                     return NotFound();
-
-                ProductService.Remove(product);
-                return NoContent();
+                else
+                    return NoContent();
             }
             catch (Exception e)
             {

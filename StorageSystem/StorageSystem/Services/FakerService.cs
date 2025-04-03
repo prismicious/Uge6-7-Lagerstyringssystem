@@ -55,5 +55,16 @@ namespace StorageSystem.Services
                 ctx.SaveChanges();
             }
         }
+        public static void Generate()
+        {
+            int productsToGenerate = 100;
+            int customersToGenerate = 20;
+            using (var context = new StorageContext())
+            {
+                context.Database.EnsureCreated(); // Ensure the database is created
+                GenerateAndPopulate(productsToGenerate, customersToGenerate); // Always populate the database
+                Console.WriteLine($"Inserted {productsToGenerate} generated products and {customersToGenerate} generated customers into the database.");
+            }
+        }
     }
 }

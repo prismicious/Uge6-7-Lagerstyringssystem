@@ -33,17 +33,10 @@ namespace StorageSystem.Services
         }
 
         // Updates a product. Returns true if the database was updated.
-        public static bool Update(Product p, decimal? Price = null, string? Name = null, string? Type = null)
+        public static bool Update(Product p)
         {
             using (var ctx = new StorageContext())
             {
-                if (Price.HasValue)
-                    p.Price = Price.Value;
-                if (Name != null)
-                    p.Name = Name;
-                if (Type != null)
-                    p.Type = Type;
-
                 ctx.Products.Update(p);
                 return 1 == ctx.SaveChanges();
             }

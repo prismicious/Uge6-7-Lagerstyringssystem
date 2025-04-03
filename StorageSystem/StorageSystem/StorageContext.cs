@@ -5,6 +5,7 @@ namespace StorageSystem
 {
     public class StorageContext : DbContext
     {
+
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductStatus> ProductStatuses { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -14,8 +15,6 @@ namespace StorageSystem
         public DbSet<Receipt> Receipts { get; set; }
         public DbSet<Customer> Customers { get; set; }
 
-
-        // The following configures EF to create a Sqlite database.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite("Data Source=storage.sqlite");
     }

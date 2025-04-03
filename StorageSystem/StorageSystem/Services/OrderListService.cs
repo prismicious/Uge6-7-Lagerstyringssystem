@@ -53,6 +53,17 @@ namespace StorageSystem.Services
             }
         }
 
+
+        public static OrderList AddOrders(OrderList orderList, List<Order> orders)
+        {
+            using (var ctx = new StorageContext())
+            {
+                orderList.Orders.Concat(orders);
+                ctx.SaveChanges();
+                return orderList;
+            }
+        }
+
         // Removes an order from the order list and the database. Returns the updated order list.
         public static OrderList RemoveOrder(OrderList orderList, Order order)
         {

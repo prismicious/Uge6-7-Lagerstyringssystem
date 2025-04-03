@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace StorageSystem.Services
 {
-    internal class TransactionService
+    public class TransactionService
     {
-        static Transaction? GetTransactionByID(int id)
+        static public Transaction? GetTransactionByID(int id)
         {
             using (var ctx = new StorageContext())
             {
@@ -18,7 +18,7 @@ namespace StorageSystem.Services
             }
             
         }
-        static ICollection<Transaction>? GetWarehouseTransactions(int id)
+        static public ICollection<Transaction>? GetWarehouseTransactions(int id)
         {
             using (var ctx = new StorageContext())
             {
@@ -32,8 +32,16 @@ namespace StorageSystem.Services
                 return null;
             }
         }
+        static public bool PostCreateTransactionFromOrder(Order order)
+        {
+            using (var ctx = new StorageContext())
+            {
+                return ctx.Transactions.SingleOrDefault(t => t.ID == id);
+            }
 
-        static 
+        }
+
+
 
     }
 }

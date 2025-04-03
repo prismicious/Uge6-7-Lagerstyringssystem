@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers(); // Add controllers to the service container
 
 var app = builder.Build();
+FakerService.Generate();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -21,6 +22,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapControllers(); // Enable controllers
+app.MapControllers(); 
 
 app.Run();
+

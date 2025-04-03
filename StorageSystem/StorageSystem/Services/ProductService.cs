@@ -1,4 +1,5 @@
-﻿using StorageSystem.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using StorageSystem.Models;
 
 namespace StorageSystem.Services
 {
@@ -51,9 +52,42 @@ namespace StorageSystem.Services
         // Removes a product from the database. Returns true if successfully removed from database.
         public static bool Remove(Product p)
         {
-            using (var ctx = new StorageContext()) { 
+            using (var ctx = new StorageContext())
+            {
                 ctx.Products.Remove(p);
                 return 1 == ctx.SaveChanges();
+            }
+        }
+
+        // Determine the available stock across warehouses
+        public static int CountStock(Product p)
+        {
+            if (p.ID < 1)
+                return 0;
+            using (var ctx = new StorageContext())
+            {
+                return ctx.Warehouses
+                    .Include(w => w.ProductStatuses)
+                    .Where(w => w.ProductStatuses.Any(p2 => p2.ProductID == p.ID))
+                    .Select(w => w.ProductStatuses.Where(p2 => p2.ProductID == p.ID).Sum(p2 => p2.Quantity))
+                    .FirstOrDefault();
+            }
+        }
+
+        // Determine the number of reserved products
+        public static int CountReserved(Product p)
+        {
+            if (p.ID < 1)
+                return 0;
+
+            using (var ctx = new StorageContext())
+            {
+                return ctx.Orders
+                    .Include(o => o.OrderList)
+                    .Where(o => o.ProductID == p.ID)
+                    .Where(o => o.OrderList.Transaction == null)
+                    .Select(o => o.Quantity)
+                    .Sum();
             }
         }
     }

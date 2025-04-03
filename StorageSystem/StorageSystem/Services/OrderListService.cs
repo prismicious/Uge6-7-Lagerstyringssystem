@@ -75,5 +75,15 @@ namespace StorageSystem.Services
                 return orderList;
             }
         }
+
+        // Removes an orderlist, and all its associated orders, from the db.
+        public static bool Remove(OrderList orderList)
+        {
+            using (var ctx = new StorageContext())
+            {
+                ctx.OrderLists.Remove(orderList);
+                return ctx.SaveChanges() > 0;
+            }
+        }
     }
 }

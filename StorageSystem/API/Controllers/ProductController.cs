@@ -25,23 +25,40 @@ namespace API.Controllers
             catch (Exception e)
             {
                 Console.WriteLine($"Error in GetAll: {e.Message}");
-                return StatusCode(500, "An error occurred while retrieving products.");
+                return StatusCode(500, e.Message);
             }
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var product = ProductService.Get(id);
-            if (product == null)
-                return NotFound();
-            // Returns 200 OK
-            return Ok(product);
+            try
+            {
+                var product = ProductService.Get(id);
+                if (product == null)
+                    return NotFound();
+                // Returns 200 OK
+                return Ok(product);
+            }
+
+            catch (Exception e)
+            {
+                if (e.Message.Contains("Sequence contains no elements"))
+                    return NotFound();
+
+                Console.WriteLine($"Error in GetById: {e.Message}");
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPost]
         public IActionResult Create([FromBody] Product product)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Return 400 Bad Request with validation errors
+            }
+
             try
             {
                 var createdProduct = ProductService.Create(product.Price, product.Name, product.Type);
@@ -51,26 +68,33 @@ namespace API.Controllers
             catch (Exception e)
             {
                 Console.WriteLine($"Error in Create: {e.Message}");
-                return StatusCode(500, "An error occurred while creating the product.");
+                return StatusCode(500, e.Message);
             }
         }
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] Product product)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Return 400 Bad Request with validation errors
+            }
+
             try
             {
                 var existingProduct = ProductService.Get(id);
-                if (existingProduct == null)
-                    return NotFound();
 
                 ProductService.Update(existingProduct, product.Price, product.Name, product.Type);
                 return NoContent();
             }
             catch (Exception e)
             {
+                // If the product is not found, return 404 Not Found
+                if (e.Message.Contains("Sequence contains no elements"))
+                    return NotFound();
+
                 Console.WriteLine($"Error in Update: {e.Message}");
-                return StatusCode(500, "An error occurred while updating the product.");
+                return StatusCode(500, e.Message);
             }
         }
 
@@ -80,16 +104,16 @@ namespace API.Controllers
             try
             {
                 var product = ProductService.Get(id);
-                if (product == null)
-                    return NotFound();
-
                 ProductService.Remove(product);
                 return NoContent();
             }
             catch (Exception e)
             {
+                if (e.Message.Contains("Sequence contains no elements"))
+                    return NotFound();
+                    
                 Console.WriteLine($"Error in Delete: {e.Message}");
-                return StatusCode(500, "An error occurred while deleting the product.");
+                return StatusCode(500, e.Message);
             }
         }
     }

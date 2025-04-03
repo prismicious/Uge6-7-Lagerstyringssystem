@@ -55,7 +55,6 @@ namespace StorageSystem.Services
                 ctx.SaveChanges();
             }
         }
-
         public static void Generate()
         {
             int productsToGenerate = 100;

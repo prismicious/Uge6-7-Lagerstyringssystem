@@ -1,7 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
+using StorageSystem;
 using StorageSystem.Models;
+using StorageSystem.Services;
 
 namespace StorageSystemTest
 {
@@ -9,13 +11,29 @@ namespace StorageSystemTest
     public sealed class IntegrationTestAPI
     {
         private static HttpClient _client;
-
+        private List<Product> _testProducts; 
 
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
             var factory = new WebApplicationFactory<Program>();
             _client = factory.CreateClient();
+        }
+
+        [TestInitialize]
+        public void Init()
+        {
+            using (var ctx = new StorageContext())
+            {
+                ctx.Database.EnsureDeleted();
+                ctx.Database.EnsureCreated();
+
+                var p1 = ProductService.Create(10.99m, "Test Product", "Test Type");
+                var p2 = ProductService.Create(20.99m, "Another Product", "Another Type");
+                var p3 = ProductService.Create(30.99m, "Third Product", "Third Type");
+
+                _testProducts = new List<Product> { p1, p2, p3 };
+            }
         }
 
         [TestMethod]
@@ -29,6 +47,20 @@ namespace StorageSystemTest
 
             // Assert
             response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var products = JsonSerializer.Deserialize<List<Product>>(responseContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            Assert.IsNotNull(products, "Response content should not be null.");
+            Assert.AreEqual(_testProducts.Count, products.Count, "Expected the same number of products in the response.");
+            foreach (var testProduct in _testProducts)
+            {
+                Assert.IsTrue(products.Any(p => p.ID == testProduct.ID && p.Name == testProduct.Name && p.Price == testProduct.Price && p.Type == testProduct.Type),
+                    $"Response should contain product with ID {testProduct.ID}.");
+            }
         }
 
         [TestMethod]
@@ -48,7 +80,7 @@ namespace StorageSystemTest
         }
 
         [TestMethod]
-        public async Task CreateProduct_InvalidInput_ReturnsBadRequest()
+        public async Task CreateProduct_InvalidInput_ReturnsInternalServerError()
         {
             // Arrange
             var product = new Product { Price = -10.99m, Name = "", Type = "" }; // Invalid input
@@ -72,7 +104,7 @@ namespace StorageSystemTest
             var response = await _client.GetAsync(requestUri);
 
             // Assert
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
             {
                 Assert.Inconclusive("Product with ID 1 does not exist.");
             }

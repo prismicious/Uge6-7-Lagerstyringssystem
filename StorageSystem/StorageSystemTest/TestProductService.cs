@@ -57,7 +57,8 @@ namespace StorageSystemTest
             Product p = ProductService.Create(123.45m, "First name", "Type");
 
             var newName = "Updated name";
-            bool updated = ProductService.Update(p, Name: newName);
+            p.Name = newName;
+            bool updated = ProductService.Update(p);
             Assert.IsTrue(updated);
 
             p = ProductService.Get(p.ID);

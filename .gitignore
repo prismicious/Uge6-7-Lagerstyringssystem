@@ -8,3 +8,42 @@
 /StorageSystem/StorageSystem/bin
 /StorageSystem/StorageSystemTest/bin
 /StorageSystem/StorageSystemTest/obj
+
+# Add API project exclusions
+/StorageSystem/API/obj
+/StorageSystem/API/bin
+
+# Common .NET exclusions
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.log
+*.tlog
+*.ide
+*.cache
+*.pdb
+*.db
+*.sqlite
+*.sqlite-journal
+
+# Exclude build artifacts
+*.dll
+*.exe
+*.app
+*.ipa
+*.dylib
+*.so
+*.a
+*.lib
+
+# Exclude temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.DS_Store
+*.Thumbs.db
+*.~lock.*
+
+.vscode/

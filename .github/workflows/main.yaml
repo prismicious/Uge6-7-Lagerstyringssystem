@@ -3,7 +3,7 @@ name: Run Tests on Push and Pull Request
 
 on:
   push:
-    branches: [ "yaml_test" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -18,7 +18,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
-    - name: navigate to project directory
+    - name: Build and test
       run: |
         cd StorageSystem
         dotnet restore

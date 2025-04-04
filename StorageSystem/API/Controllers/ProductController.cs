@@ -50,11 +50,6 @@ namespace API.Controllers
 
             catch (Exception e)
             {
-                // If the product is not found, return 404 Not Found
-                // This is a bit of a hack, but it works for now.
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
-
                 Console.WriteLine($"Error in GetById: {e.Message}");
                 return StatusCode(500, e.Message);
             }
@@ -83,8 +78,8 @@ namespace API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Product product)
+        [HttpPut]
+        public IActionResult UpdateOrCreate([FromBody] Product product)
         {
             // Handles PUT requests to api/product/{id}
             if (!ModelState.IsValid)
@@ -94,17 +89,36 @@ namespace API.Controllers
 
             try
             {
-                var existingProduct = ProductService.Get(id);
-
-                ProductService.Update(existingProduct, product.Price, product.Name, product.Type);
-                return NoContent();
+                if (!ProductService.Update(product))
+                    return Create(product);
+                else
+                    return NoContent();
             }
             catch (Exception e)
             {
-                // If the product is not found, return 404 Not Found
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
+                Console.WriteLine($"Error in Update: {e.Message}");
+                return StatusCode(500, e.Message);
+            }
+        }
 
+
+        [HttpPatch]
+        public IActionResult Update([FromBody] Product product)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Return 400 Bad Request with validation errors
+            }
+
+            try
+            {
+                if (!ProductService.Update(product))
+                    return NotFound();
+                else
+                    return NoContent();
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"Error in Update: {e.Message}");
                 return StatusCode(500, e.Message);
             }
@@ -116,15 +130,13 @@ namespace API.Controllers
             // Handles DELETE requests to api/product/{id}
             try
             {
-                var product = ProductService.Get(id);
-                ProductService.Remove(product);
-                return NoContent();
+                if (!ProductService.Remove(id))
+                    return NotFound();
+                else
+                    return NoContent();
             }
             catch (Exception e)
             {
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
-                    
                 Console.WriteLine($"Error in Delete: {e.Message}");
                 return StatusCode(500, e.Message);
             }

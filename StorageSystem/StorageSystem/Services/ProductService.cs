@@ -12,11 +12,11 @@ namespace StorageSystem.Services
             }
         }
 
-        public static Product Get(int ID)
+        public static Product? Get(int ID)
         {
             using (var ctx = new StorageContext())
             {
-                return ctx.Products.Where(p => p.ID == ID).Single();
+                return ctx.Products.Where(p => p.ID == ID).SingleOrDefault();
             }
         }
 
@@ -31,18 +31,14 @@ namespace StorageSystem.Services
             }
         }
 
-        // Updates a product. Returns true if the database was updated.
-        public static bool Update(Product p, decimal? Price = null, string? Name = null, string? Type = null)
+        // Updates an existing product. Returns true if the database was updated.
+        public static bool Update(Product p)
         {
+            if (p.ID == 0 || Get(p.ID) == null)
+                return false;
+
             using (var ctx = new StorageContext())
             {
-                if (Price.HasValue)
-                    p.Price = Price.Value;
-                if (Name != null)
-                    p.Name = Name;
-                if (Type != null)
-                    p.Type = Type;
-
                 ctx.Products.Update(p);
                 return 1 == ctx.SaveChanges();
             }
@@ -51,7 +47,28 @@ namespace StorageSystem.Services
         // Removes a product from the database. Returns true if successfully removed from database.
         public static bool Remove(Product p)
         {
-            using (var ctx = new StorageContext()) { 
+            if (p.ID == 0 || Get(p.ID) == null)
+                return false;
+
+            using (var ctx = new StorageContext())
+            {
+                ctx.Products.Remove(p);
+                return 1 == ctx.SaveChanges();
+            }
+        }
+
+        // Removes a product from the database. Returns true if successfully removed from database.
+        public static bool Remove(int ID)
+        {
+            if (ID == 0)
+                return false;
+
+            Product? p = Get(ID);
+            if (p == null)
+                return false;
+
+            using (var ctx = new StorageContext())
+            {
                 ctx.Products.Remove(p);
                 return 1 == ctx.SaveChanges();
             }

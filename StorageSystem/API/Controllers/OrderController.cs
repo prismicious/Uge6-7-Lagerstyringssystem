@@ -1,4 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StorageSystem.Models;
+using StorageSystem.Services;
+using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
+
+
+namespace API.Controllers
+{
+
+    [ApiController]
+    [Route("api/order")]
+
+    public class OrderController : ControllerBase
+    {
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            try
+            {
+                var orders = OrderService.Get();
+                // Returns 200 OK
+                return Ok(orders);
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error in GetAll(OrderController):{ex.Message}");
                 return StatusCode(500, ex.Message);

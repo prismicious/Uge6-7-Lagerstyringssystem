@@ -128,12 +128,12 @@ namespace StorageSystemTest
         public async Task UpdateProduct_ReturnsNoContent()
         {
             // Arrange
-            var product = new Product { Price = 15.99m, Name = "Updated Product", Type = "Updated Type" };
+            var product = new Product { ID = 1, Price = 15.99m, Name = "Updated Product", Type = "Updated Type" };
             var content = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
-            var requestUri = "/api/Product/1";
+            var requestUri = "/api/Product";
 
             // Act
-            var response = await _client.PutAsync(requestUri, content);
+            var response = await _client.PatchAsync(requestUri, content);
 
             // Assert
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -147,12 +147,12 @@ namespace StorageSystemTest
         public async Task UpdateProduct_NonExistent_ReturnsNotFound()
         {
             // Arrange
-            var product = new Product { Price = 15.99m, Name = "Non-existent Product", Type = "Non-existent Type" };
+            var product = new Product { ID = 9999, Price = 15.99m, Name = "Non-existent Product", Type = "Non-existent Type" };
             var content = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
-            var requestUri = "/api/Product/9999"; // Non-existent ID
+            var requestUri = "/api/Product"; // Non-existent ID
 
             // Act
-            var response = await _client.PutAsync(requestUri, content);
+            var response = await _client.PatchAsync(requestUri, content);
 
             // Assert
             Assert.AreEqual(System.Net.HttpStatusCode.NotFound, response.StatusCode);

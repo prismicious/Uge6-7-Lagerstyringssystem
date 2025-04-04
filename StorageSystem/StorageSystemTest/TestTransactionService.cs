@@ -14,39 +14,55 @@ public class TestTransactionService
         {
             ctx.Database.EnsureDeleted();
             ctx.Database.EnsureCreated();
-            var warehouse1 = new Warehouse { ID = 1,Location = "Jylland",Transactions = new List<Transaction>()};
+
+            var warehouse1 = new Warehouse { Location = "Jylland" };
+            ctx.Warehouses.Add(warehouse1);
+            ctx.SaveChanges();
+
+            var customer = new Customer { Name = "warehouse:1", Email = "test", Address = "test", Type = 2 };
+            ctx.Customers.Add(customer);
+            ctx.SaveChanges();
+
+            var ol1 = OrderListService.Create(customer);
+            var ol2 = OrderListService.Create(customer);
+            var ol3 = OrderListService.Create(customer);
+
             var transaction1 = new Transaction
             {
                 ID = 1,
                 Date = DateTime.Now,
                 Type = TransactionType.Sale,
-                Warehouse = warehouse1  
+                OrderListID = ol1.ID,
+                WarehouseID = warehouse1.ID
             };
             var transaction2 = new Transaction
             {
                 ID = 2,
                 Date = DateTime.Now.AddDays(-1),
-                Type = TransactionType.Transfer,
-                Warehouse = warehouse1  
+                Type = TransactionType.Return,
+                OrderListID = ol2.ID,
+                WarehouseID = warehouse1.ID
             };
             var transaction3 = new Transaction
             {
                 ID = 3,
                 Date = DateTime.Now.AddDays(-2),
                 Type = TransactionType.Transfer,
-                Warehouse = warehouse1
+                OrderListID = ol3.ID,
+                WarehouseID = warehouse1.ID
             };
-            warehouse1.Transactions.Add(transaction1);
-            warehouse1.Transactions.Add(transaction2);
-            warehouse1.Transactions.Add(transaction3);
-            ctx.Add(warehouse1);
+
+
+            ctx.Transactions.Add(transaction1);
+            ctx.Transactions.Add(transaction2);
+            ctx.Transactions.Add(transaction3);
             ctx.SaveChanges();
+
             Assert.AreEqual(1, ctx.Warehouses.Count());
             Assert.AreEqual(3, ctx.Transactions.Count());
 
         }
     }
-
 
     [TestMethod]
     public void TestGetTransactionFromID()
@@ -63,9 +79,4 @@ public class TestTransactionService
 
         Assert.AreEqual(3, result?.Count());
     }
-
-    
-
-
- 
 }

@@ -7,11 +7,6 @@ namespace StorageSystemTest;
 [TestClass]
 public class TestTransactionService
 {
-    
-
-
-
-
     [TestInitialize]
     public void init()
     {
@@ -56,9 +51,9 @@ public class TestTransactionService
     [TestMethod]
     public void TestGetTransactionFromID()
     {
-        var result = TransactionService.GetTransactionByID(1);
+        var result = TransactionService.Get(1);
 
-        Assert.AreEqual(TransactionType.Sale, result.Type);
+        Assert.AreEqual(TransactionType.Sale, result?.Type);
 
     }
     [TestMethod]
@@ -66,7 +61,7 @@ public class TestTransactionService
     {
         var result = TransactionService.GetWarehouseTransactions(1);
 
-        Assert.AreEqual(3, result.Count());
+        Assert.AreEqual(3, result?.Count());
     }
 
     

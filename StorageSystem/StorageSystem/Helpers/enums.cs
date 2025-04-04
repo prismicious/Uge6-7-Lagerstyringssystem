@@ -8,8 +8,8 @@ namespace StorageSystem.Helpers
 {
     public enum TransactionType
     {
-        Sale = 1,
-        Return = 2,
-        Transfer = 3
+        Sale,
+        Return,
+        Transfer
     }
 }

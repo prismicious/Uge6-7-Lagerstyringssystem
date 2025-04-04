@@ -8,3 +8,6 @@
 /StorageSystem/StorageSystem/bin
 /StorageSystem/StorageSystemTest/bin
 /StorageSystem/StorageSystemTest/obj
+/StorageSystem/API/API.csproj.user
+/StorageSystem/API/bin/Debug/net9.0
+/StorageSystem/API/obj

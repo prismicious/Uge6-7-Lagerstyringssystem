@@ -43,7 +43,7 @@ namespace StorageSystemTest
         public void Read()
         {
             Create();
-            Product p = ProductService.Get(1);
+            Product? p = ProductService.Get(1);
             Assert.IsTrue(p != null);
             Assert.AreEqual(1, p.ID);
             Assert.AreEqual(price, p.Price);
@@ -54,7 +54,7 @@ namespace StorageSystemTest
         [TestMethod]
         public void Update()
         {
-            Product p = ProductService.Create(123.45m, "First name", "Type");
+            Product? p = ProductService.Create(123.45m, "First name", "Type");
 
             var newName = "Updated name";
             p.Name = newName;
@@ -62,6 +62,7 @@ namespace StorageSystemTest
             Assert.IsTrue(updated);
 
             p = ProductService.Get(p.ID);
+            Assert.IsNotNull(p);
             Assert.AreEqual(newName, p.Name);
         }
 

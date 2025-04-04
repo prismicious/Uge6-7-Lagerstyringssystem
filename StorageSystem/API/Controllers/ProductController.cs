@@ -43,9 +43,6 @@ namespace API.Controllers
 
             catch (Exception e)
             {
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
-
                 Console.WriteLine($"Error in GetById: {e.Message}");
                 return StatusCode(500, e.Message);
             }
@@ -89,10 +86,6 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                // If the product is not found, return 404 Not Found
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
-
                 Console.WriteLine($"Error in Update: {e.Message}");
                 return StatusCode(500, e.Message);
             }
@@ -116,10 +109,6 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                // If the product is not found, return 404 Not Found
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
-
                 Console.WriteLine($"Error in Update: {e.Message}");
                 return StatusCode(500, e.Message);
             }
@@ -137,9 +126,6 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
-                    
                 Console.WriteLine($"Error in Delete: {e.Message}");
                 return StatusCode(500, e.Message);
             }

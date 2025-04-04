@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StorageSystem.Models
+﻿namespace StorageSystem.Models
 {
     public class Customer
     {
@@ -16,6 +10,5 @@ namespace StorageSystem.Models
 
         public ICollection<OrderList> OrderLists;
         public ICollection<Receipt> Receipts;
-
     }
 }

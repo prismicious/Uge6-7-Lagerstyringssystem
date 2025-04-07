@@ -70,13 +70,14 @@ namespace StorageSystemTest
             var product = new Product { Price = 10.99m, Name = "Test Product", Type = "Test Type" };
             var content = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
             var requestUri = "/api/Product";
-
+            Assert.AreEqual(3, ProductService.Get().Count);
             // Act
             var response = await _client.PostAsync(requestUri, content);
 
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.AreEqual(System.Net.HttpStatusCode.Created, response.StatusCode);
+            Assert.AreEqual(4, ProductService.Get().Count);
         }
 
         [TestMethod]
@@ -86,6 +87,7 @@ namespace StorageSystemTest
             var product = new Product { Price = -10.99m, Name = "", Type = "" }; // Invalid input
             var content = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
             var requestUri = "/api/Product";
+            
 
             // Act
             var response = await _client.PostAsync(requestUri, content);

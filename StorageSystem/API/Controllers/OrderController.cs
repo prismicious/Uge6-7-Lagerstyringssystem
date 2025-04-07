@@ -33,7 +33,7 @@ namespace API.Controllers
         {
             try
             {
-                var order = ProductService.Get(id);
+                var order = OrderService.Get(id);
                 if (order == null)
                     return NotFound();
                 return Ok(order);

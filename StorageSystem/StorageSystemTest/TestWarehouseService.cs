@@ -15,6 +15,7 @@ namespace StorageSystemTest
         public void Init()
         {
             using var ctx = new StorageContext();
+            ctx.Database.EnsureDeleted();
             ctx.Database.EnsureCreated();
 
             // Create some test warehouses
@@ -96,5 +97,20 @@ namespace StorageSystemTest
         {
             // TODO needs transaction service
         }
+        [TestMethod]
+        public void GetAllProductStatuses()
+        {
+            int index = 0;
+            var products = ProductService.Get();
+            foreach (var p in products)
+            {
+                WarehouseService.CreateProductStatus(wh1, p, p.ID);
+                index++;
+            }
+            
+            List<ProductStatus> result = WarehouseService.GetAllWarehouseProductStatus(wh1);
+            Assert.AreEqual(100, result.Count);
+        }
+
     }
 }

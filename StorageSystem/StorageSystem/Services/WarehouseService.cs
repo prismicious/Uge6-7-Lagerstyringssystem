@@ -54,6 +54,13 @@ namespace StorageSystem.Services
                 .Where(ps => ps.ProductID == productID && ps.Warehouse == wh)
                 .SingleOrDefault();
         }
+        // Get all product statuses for a warehouse
+        public static List<ProductStatus>? GetAllWarehouseProductStatus(Warehouse wh)
+        {
+            using var ctx = new StorageContext();
+            return ctx.ProductStatuses
+                .Where(ps => ps.WarehouseID == wh.ID).ToList();
+        }
 
         // Create new product status for a product
         public static ProductStatus? CreateProductStatus(Warehouse wh, Product p, int initialQuantity = 0)

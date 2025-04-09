@@ -21,7 +21,7 @@ namespace StorageSystemTest
         {
             using (var ctx = new StorageContext())
             {
-                ctx.Database.EnsureDeleted();
+                //ctx.Database.EnsureDeleted();
                 ctx.Database.EnsureCreated();
                 Assert.AreEqual(0, ctx.Orders.Count());
 

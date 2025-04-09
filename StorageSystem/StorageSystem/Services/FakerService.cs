@@ -49,11 +49,38 @@ namespace StorageSystem.Services
                 .RuleFor(c => c.Type, f => f.Random.Number(0, 2)); // 0: Customer, 1: Business, 2: Warehouse
             var customers = customerFaker.Generate(customerCount);
 
+            // Generate warehouses
+            var warehouses = new Faker<Warehouse>()
+                .RuleFor(w => w.Location, f => f.Address.City())
+                .RuleFor(w => w.ProductStatuses, _ => new List<ProductStatus>())
+                .RuleFor(w => w.Transactions, _ => new List<Transaction>())
+                .Generate(5); // Create 5 warehouses
+
+            // Generate product statuses
+            var productStatuses = new Faker<ProductStatus>()
+                .RuleFor(ps => ps.ProductID, f => f.Random.Number(1, productCount))
+                .RuleFor(ps => ps.Quantity, f => f.Random.Number(1, 100))
+                .RuleFor(ps => ps.Reserved, f => f.PickRandom(0, 1))
+                .Generate(productCount); // Generate product statuses for all products
+
+                
+
+            // Assign product statuses to warehouses randomly
+            var random = new Random();
+            foreach (var productStatus in productStatuses)
+            {
+                var randomWarehouse = warehouses[random.Next(warehouses.Count)];
+                productStatus.WarehouseID = randomWarehouse.ID; // Assign a random warehouse ID
+                randomWarehouse.ProductStatuses.Add(productStatus); // Add to the warehouse's ProductStatuses list
+            }
+
             using (var ctx = new StorageContext())
             {
-                // Add products and customers to the context
+                // Add warehouses, products, and customers to the context
+                ctx.Warehouses.AddRange(warehouses);
                 ctx.Products.AddRange(products);
                 ctx.Customers.AddRange(customers);
+                ctx.ProductStatuses.AddRange(productStatuses);
                 ctx.SaveChanges();
                 LogService.Log($"Inserted {products.Count} products and {customers.Count} customers into the database.");
             }
@@ -67,6 +94,7 @@ namespace StorageSystem.Services
             {
                 context.Database.EnsureCreated(); // Ensure the database is created
                 GenerateAndPopulate(productsToGenerate, customersToGenerate); // Always populate the database
+
             }
             LogService.Log("Database population completed.");
         }

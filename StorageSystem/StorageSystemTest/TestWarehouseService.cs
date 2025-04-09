@@ -15,6 +15,7 @@ namespace StorageSystemTest
         public void Init()
         {
             using var ctx = new StorageContext();
+            ctx.Database.EnsureDeleted();
             ctx.Database.EnsureCreated();
 
             // Create some test warehouses
@@ -91,10 +92,41 @@ namespace StorageSystemTest
             }
         }
 
+        // Move product from one warehouse to another
         [TestMethod]
         public void MoveBetweenWarehouses()
         {
-            // TODO needs transaction service
+            foreach (var p in products)
+            {
+                WarehouseService.UpdateProductQuantity(wh1, p, p.ID);
+                WarehouseService.UpdateProductQuantity(wh2, p, p.ID);
+            }
+
+            // Move product to a single warehouse
+            var product = products[5];
+            var status_wh1 = WarehouseService.GetProductStatus(wh1, product);
+            var status_wh2 = WarehouseService.GetProductStatus(wh2, product);
+            Assert.IsNotNull(status_wh1);
+            Assert.IsNotNull(status_wh2);
+
+            int quantity_wh1 = status_wh1.Quantity;
+            int quantity_wh2 = status_wh2.Quantity;
+            Assert.AreNotEqual(0, quantity_wh1);
+            Assert.AreNotEqual(0, quantity_wh2);
+
+            // Move products from wh1 to wh2
+            var orderList = OrderListService.Create(WarehouseService.GetAssociatedCustomer(wh2));
+            var order = OrderService.Create(orderList, product, quantity_wh1, 0, 0);
+            var tx = WarehouseService.MoveProduct(wh1, wh2, orderList);
+
+            // Check that product was moved
+            status_wh1 = WarehouseService.GetProductStatus(wh1, product);
+            status_wh2 = WarehouseService.GetProductStatus(wh2, product);
+            Assert.IsNotNull(status_wh1);
+            Assert.IsNotNull(status_wh2);
+
+            Assert.AreEqual(0, status_wh1.Quantity);
+            Assert.AreEqual(quantity_wh1 + quantity_wh2, status_wh2.Quantity);
         }
     }
 }

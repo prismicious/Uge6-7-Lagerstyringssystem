@@ -31,11 +31,11 @@ namespace StorageSystem.Services
 
             // Check to see if the order list already have a transaction.
             // If it does, return it.
-            Transaction? tx = ctx.Transactions.Where(t => t.OrderList == orderList).SingleOrDefault();
+            Transaction? tx = ctx.Transactions.Where(t => t.OrderListID == orderList.ID).SingleOrDefault();
             if (tx != null)
                 return tx;
 
-            tx = new Transaction { OrderList = orderList, Type = type, Date = DateTime.Now };
+            tx = new Transaction { OrderListID = orderList.ID, Type = type, Date = DateTime.Now };
             ctx.Transactions.Add(tx);
             ctx.SaveChanges();
             return tx;
@@ -51,9 +51,12 @@ namespace StorageSystem.Services
             return Create(orderList, Helpers.TransactionType.Return);
         }
 
-        static public Transaction CreateWarehouseTransfer(OrderList orderList)
+        static public Transaction CreateWarehouseTransfer(OrderList orderList, Warehouse from)
         {
-            return Create(orderList, Helpers.TransactionType.Transfer);
+            var tx = Create(orderList, Helpers.TransactionType.Transfer);
+            tx.WarehouseID = from.ID;
+            //tx.Warehouse = from;
+            return tx;
         }
     }
 }

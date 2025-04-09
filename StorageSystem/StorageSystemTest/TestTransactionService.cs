@@ -60,7 +60,6 @@ public class TestTransactionService
 
             Assert.AreEqual(1, ctx.Warehouses.Count());
             Assert.AreEqual(3, ctx.Transactions.Count());
-
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StorageSystem;
+using StorageSystem.Exceptions;
 using StorageSystem.Models;
 
 namespace StorageSystem.Services
@@ -27,7 +28,7 @@ namespace StorageSystem.Services
         {
             using var ctx = new StorageContext();
             ctx.Warehouses.Remove(wh);
-            return 1 == ctx.SaveChanges();
+            return 0 != ctx.SaveChanges();
         }
 
         // Get the customer associated with the warehouse
@@ -61,7 +62,7 @@ namespace StorageSystem.Services
             using var ctx = new StorageContext();
             var ps = new ProductStatus { ProductID = p.ID, WarehouseID = wh.ID, Quantity = initialQuantity };
             ctx.ProductStatuses.Add(ps);
-            if (1 != ctx.SaveChanges())
+            if (0 == ctx.SaveChanges())
                 return null;
             else
                 return ps;
@@ -76,7 +77,7 @@ namespace StorageSystem.Services
                 return false;
 
             ctx.ProductStatuses.Update(ps);
-            return 1 == ctx.SaveChanges();
+            return 0 != ctx.SaveChanges();
         }
 
         // Update a products quantity in a warehouse.
@@ -112,27 +113,38 @@ namespace StorageSystem.Services
         }
 
         // Moves product from one warehouse to another
-        public static bool MoveProduct(Warehouse from, Warehouse to, Product p, int quantity)
+        public static Transaction MoveProduct(Warehouse from, Warehouse to, OrderList orderList)
         {
-            ProductStatus? statusFrom = GetProductStatus(from, p);
+            if (orderList.Orders.Count == 0)
+                throw new ArgumentException("Order list is empty");
 
-            // If there is no product status, there is no product at location
-            if (statusFrom == null)
-                return false;
+            // Verify the customer/warehouse
+            var customerTo = GetAssociatedCustomer(to);
+            if (orderList.CustomerID != customerTo.ID)
+                throw new CustomerIDMismatchException($"Expected {customerTo.ID}, got {orderList.CustomerID}");
 
             // Make sure there is enough product to move
-            if (statusFrom.Quantity < quantity)
-                return false;
+            foreach (Order o in orderList.Orders)
+            {
+                var p = ProductService.Get(o.ProductID);
+                if (p == null)
+                    throw new InvalidDataException("Unknown product id");
 
-            // Create order for the move
-            var customerTo = GetAssociatedCustomer(to);
-            var ol = OrderListService.Create(customerTo);
-            var order = OrderService.Create(ol, p, quantity, 0, 0); // special price for friends
+                o.Product = p;
+                ProductStatus? statusFrom = GetProductStatus(from, o.Product);
+                if (statusFrom == null || statusFrom.Quantity < o.Quantity)
+                    throw new InsufficientStockException($"Product {o.ProductID}: {o.Product.Name}");
+            }
 
-            // TODO create the transaction
-            //var transaction = TransactionService.Create(ol);
+            // Adjust product quantity in each warehouse
+            foreach (Order o in orderList.Orders)
+            {
+                WarehouseService.UpdateProductQuantity(from, o.Product, -o.Quantity);
+                WarehouseService.UpdateProductQuantity(to,   o.Product, +o.Quantity);
+            }
 
-            return true;
+            // Create the transaction
+            return TransactionService.CreateWarehouseTransfer(orderList, from);
         }
     }
 }

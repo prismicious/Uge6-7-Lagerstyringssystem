@@ -128,5 +128,20 @@ namespace StorageSystemTest
             Assert.AreEqual(0, status_wh1.Quantity);
             Assert.AreEqual(quantity_wh1 + quantity_wh2, status_wh2.Quantity);
         }
+        [TestMethod]
+        public void GetAllProductStatuses()
+        {
+            int index = 0;
+            var products = ProductService.Get();
+            foreach (var p in products)
+            {
+                WarehouseService.CreateProductStatus(wh1, p, p.ID);
+                index++;
+            }
+            
+            List<ProductStatus> result = WarehouseService.GetAllWarehouseProductStatus(wh1);
+            Assert.AreEqual(100, result.Count);
+        }
+
     }
 }

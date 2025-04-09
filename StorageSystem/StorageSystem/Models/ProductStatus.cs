@@ -10,5 +10,6 @@
         public Product Product { get; set; }
         public int WarehouseID { get; set; }
         public Warehouse Warehouse { get; set; }
+
     }
 }

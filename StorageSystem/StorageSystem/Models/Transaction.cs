@@ -17,5 +17,9 @@ namespace StorageSystem.Models
         // Optional foreign key and reference navigation
         public int? WarehouseID { get; set; }
         //public Warehouse? Warehouse { get; set; }
+        public override string ToString()
+        {
+            return $"{ID},{Date},{Type},{OrderListID},{Receipt?.ID},{WarehouseID}";
+        }
     }
 }

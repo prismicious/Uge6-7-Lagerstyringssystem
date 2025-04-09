@@ -6,5 +6,7 @@ class Program
 {
     static void Main(string[] args)
     {
+        LogService.Log("Application started.");
+        FakerService.Generate();
     }
 }

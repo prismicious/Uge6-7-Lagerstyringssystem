@@ -8,13 +8,18 @@ namespace API.Controllers
     /// Controller for managing products in the storage system.
     /// Provides endpoints to create, read, update, and delete products.
     /// </summary>
+    // This attribute indicates that this class is a controller for an API.
+    // It also means that the controller gets picked up by the ASP.NET Core routing system.
+    // This is done in the Program.cs file with app.AddControllers() and app.MapControllers().
+    
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/product")] // I think this is a bit easier to understand.
     public class ProductController : ControllerBase
     {
         [HttpGet]
         public IActionResult GetAll()
         {
+            // Handles GET requests to api/product
             try
             {
                 var products = ProductService.Get();
@@ -29,9 +34,11 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")] // Handles GET requests to api/product/{id}
+        // The {id} part is a route parameter. It means that the id will be passed in the URL.
         public IActionResult GetById(int id)
         {
+            // Handles GET requests to api/product/{id}
             try
             {
                 var product = ProductService.Get(id);
@@ -51,6 +58,8 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] Product product)
         {
+            // Handles POST requests to api/product
+            // The [FromBody] attribute indicates that the product object will be deserialized from the request body.
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState); // Return 400 Bad Request with validation errors
@@ -72,6 +81,7 @@ namespace API.Controllers
         [HttpPut]
         public IActionResult UpdateOrCreate([FromBody] Product product)
         {
+            // Handles PUT requests to api/product/{id}
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState); // Return 400 Bad Request with validation errors
@@ -117,6 +127,7 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            // Handles DELETE requests to api/product/{id}
             try
             {
                 if (!ProductService.Remove(id))

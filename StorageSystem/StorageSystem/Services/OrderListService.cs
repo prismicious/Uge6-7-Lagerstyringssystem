@@ -27,7 +27,7 @@ namespace StorageSystem.Services
                 return ctx.OrderLists
                     .Where(ol => ol.ID == ID)
                     .Include(ol => ol.Orders)
-                    .Single();
+                    .SingleOrDefault();
             }
         }
 

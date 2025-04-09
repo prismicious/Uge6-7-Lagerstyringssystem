@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using StorageSystem;
+using StorageSystem.DTOs;
 using StorageSystem.Models;
 using StorageSystem.Services;
 
@@ -29,7 +30,7 @@ public class IntegrationTestOrderAPI
         {
             ctx.Database.EnsureDeleted();
             ctx.Database.EnsureCreated();
-            Customer customer = new Customer() { ID = 1 , Name = "John",Email = "JohnMadden@handegg.com",Address = "USA"};
+            Customer customer = new Customer() { ID = 1, Name = "John", Email = "JohnMadden@handegg.com", Address = "USA" };
             ctx.Customers.Add(customer);
             ctx.SaveChanges();
             Product testProduct = ProductService.Create(1.0m, "TestProduct", "BestInTestTest");
@@ -92,41 +93,47 @@ public class IntegrationTestOrderAPI
         //Act 
         var response = await _client.GetAsync(requestUri);
         var responseContent = await response.Content.ReadAsStringAsync();
-        
+
         //Assert
         Assert.AreEqual("Sequence contains no elements", responseContent);
     }
     [TestMethod]
     public async Task CreateOrder()
     {
-
-
-        
-        Order order;
-        Order order1;
         // Arrange
         using (var ctx = new StorageContext())
         {
-            Customer customer = new Customer() { ID = 2, Name = "Mohn", Email = "MohnJadden@egghand.com", Address = "ASU" };
-            ctx.Customers.Add(customer);
-            ctx.SaveChanges();
-            OrderList orderlist = OrderListService.Create(customer);
-            Product product = ProductService.Create(100.0m, "Test", "Type");
+            // Arrange
+            OrderDTO dto = new OrderDTO()
+            {
+                Quantity = 5,
+                Discount = 0.0m,
+                Price = 100.0m,
+                ProductID = 1,
+                OrderListID = 0,
+                Customer = new Customer()
+                {
+                    Name = "John",
+                    Email = "John@doe.com",
+                    Address = "Teststreet 7",
+                    Type = 1 // Customer
+                }
+            };
 
-            //order1 = OrderService.Create(orderlist, product, 10, 0, 15);
-            order = new Order() { ID = 4, Price = 100.0m, Product = product, Discount = 0.0m, OrderList = orderlist, Quantity = 5, ProductID = 2,OrderListID = 2};
-            string RequestUri = "/api/order";
-            var content = new StringContent(JsonSerializer.Serialize(order), Encoding.UTF8, "application/json");
-            Console.WriteLine("HEJSA JEG ER HER");
-            string my_content = await content.ReadAsStringAsync();
-            Console.WriteLine(my_content);
-            //Act 
-            var response = await _client.PostAsync(RequestUri, content);
-            Console.WriteLine(response);
-            //var responseContent = await response.Content.ReadAsStringAsync();
+            var customer = dto.Customer;
+
+            // Act
+            var json = JsonSerializer.Serialize(dto);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync("/api/Order", content);
+            var responseContent = await response.Content.ReadAsStringAsync();
 
             //Assert
             response.EnsureSuccessStatusCode();
+            responseContent.Contains(json);
+            Assert.IsTrue(responseContent.Contains(customer.Name), "Response content should contain the customer name.");
+            Assert.IsTrue(responseContent.Contains(customer.Address), "Response content should contain the customer address.");
+            Assert.IsTrue(responseContent.Contains(customer.Email), "Response content should contain the customer email.");
         }
     }
 

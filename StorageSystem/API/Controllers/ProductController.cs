@@ -8,13 +8,18 @@ namespace API.Controllers
     /// Controller for managing products in the storage system.
     /// Provides endpoints to create, read, update, and delete products.
     /// </summary>
+    // This attribute indicates that this class is a controller for an API.
+    // It also means that the controller gets picked up by the ASP.NET Core routing system.
+    // This is done in the Program.cs file with app.AddControllers() and app.MapControllers().
+    
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/product")] // I think this is a bit easier to understand.
     public class ProductController : ControllerBase
     {
         [HttpGet]
         public IActionResult GetAll()
         {
+            // Handles GET requests to api/product
             try
             {
                 var products = ProductService.Get();
@@ -29,9 +34,11 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")] // Handles GET requests to api/product/{id}
+        // The {id} part is a route parameter. It means that the id will be passed in the URL.
         public IActionResult GetById(int id)
         {
+            // Handles GET requests to api/product/{id}
             try
             {
                 var product = ProductService.Get(id);
@@ -43,9 +50,6 @@ namespace API.Controllers
 
             catch (Exception e)
             {
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
-
                 Console.WriteLine($"Error in GetById: {e.Message}");
                 return StatusCode(500, e.Message);
             }
@@ -54,6 +58,8 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] Product product)
         {
+            // Handles POST requests to api/product
+            // The [FromBody] attribute indicates that the product object will be deserialized from the request body.
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState); // Return 400 Bad Request with validation errors
@@ -72,8 +78,32 @@ namespace API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Product product)
+        [HttpPut]
+        public IActionResult UpdateOrCreate([FromBody] Product product)
+        {
+            // Handles PUT requests to api/product/{id}
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Return 400 Bad Request with validation errors
+            }
+
+            try
+            {
+                if (!ProductService.Update(product))
+                    return Create(product);
+                else
+                    return NoContent();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error in Update: {e.Message}");
+                return StatusCode(500, e.Message);
+            }
+        }
+
+
+        [HttpPatch]
+        public IActionResult Update([FromBody] Product product)
         {
             if (!ModelState.IsValid)
             {
@@ -82,17 +112,13 @@ namespace API.Controllers
 
             try
             {
-                var existingProduct = ProductService.Get(id);
-
-                ProductService.Update(existingProduct, product.Price, product.Name, product.Type);
-                return NoContent();
+                if (!ProductService.Update(product))
+                    return NotFound();
+                else
+                    return NoContent();
             }
             catch (Exception e)
             {
-                // If the product is not found, return 404 Not Found
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
-
                 Console.WriteLine($"Error in Update: {e.Message}");
                 return StatusCode(500, e.Message);
             }
@@ -101,17 +127,16 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            // Handles DELETE requests to api/product/{id}
             try
             {
-                var product = ProductService.Get(id);
-                ProductService.Remove(product);
-                return NoContent();
+                if (!ProductService.Remove(id))
+                    return NotFound();
+                else
+                    return NoContent();
             }
             catch (Exception e)
             {
-                if (e.Message.Contains("Sequence contains no elements"))
-                    return NotFound();
-                    
                 Console.WriteLine($"Error in Delete: {e.Message}");
                 return StatusCode(500, e.Message);
             }

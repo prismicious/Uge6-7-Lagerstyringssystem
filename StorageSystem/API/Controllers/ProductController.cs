@@ -29,7 +29,7 @@ namespace API.Controllers
 
             catch (Exception e)
             {
-                Console.WriteLine($"Error in GetAll: {e.Message}");
+                LogService.LogError($"Error in GetAll: {e.Message}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -50,7 +50,7 @@ namespace API.Controllers
 
             catch (Exception e)
             {
-                Console.WriteLine($"Error in GetById: {e.Message}");
+                LogService.LogError($"Error in GetById: {e.Message}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -73,7 +73,7 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error in Create: {e.Message}");
+                LogService.LogError($"Error in Create: {e.Message}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -96,7 +96,7 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error in Update: {e.Message}");
+                LogService.LogError($"Error in Update: {e.Message}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -119,7 +119,7 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error in Update: {e.Message}");
+                LogService.LogError($"Error in Update: {e.Message}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -137,7 +137,7 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error in Delete: {e.Message}");
+                LogService.LogError($"Error in Delete: {e.Message}");
                 return StatusCode(500, e.Message);
             }
         }

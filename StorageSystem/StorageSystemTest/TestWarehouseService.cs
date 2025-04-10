@@ -120,7 +120,7 @@ namespace StorageSystemTest
 
             // Create an order list for the product
             var wh2Customer = WarehouseService.GetAssociatedCustomer(wh2);
-            var orderList = OrderListService.Create(wh2Customer);
+            var orderList = OrderListService.Create(wh2Customer.ID);
             var order = OrderService.Create(orderList, product, quantity_wh1, 0, 0);
 
             // Use the order list to move the product from wh1 to wh2

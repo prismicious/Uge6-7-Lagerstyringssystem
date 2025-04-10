@@ -40,7 +40,7 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 ctx.Products.Update(p);
-                return 1 == ctx.SaveChanges();
+                return 0 != ctx.SaveChanges();
             }
         }
 
@@ -53,7 +53,7 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 ctx.Products.Remove(p);
-                return 1 == ctx.SaveChanges();
+                return 0 != ctx.SaveChanges();
             }
         }
 
@@ -70,7 +70,7 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 ctx.Products.Remove(p);
-                return 1 == ctx.SaveChanges();
+                return 0 != ctx.SaveChanges();
             }
         }
     }

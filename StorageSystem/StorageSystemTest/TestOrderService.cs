@@ -97,6 +97,7 @@ namespace StorageSystemTest
 
             // Get the order from the db
             var order = OrderService.Get(lastCreatedOrderID);
+            Assert.IsNotNull(order);
 
             // Delete it
             Assert.IsTrue(OrderService.Remove(order));

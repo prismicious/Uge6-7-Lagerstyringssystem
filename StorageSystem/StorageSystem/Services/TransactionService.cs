@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StorageSystem.Models;
+﻿using StorageSystem.Models;
 
 namespace StorageSystem.Services
 {

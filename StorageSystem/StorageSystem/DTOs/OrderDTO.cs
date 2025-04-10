@@ -10,10 +10,6 @@ namespace StorageSystem.DTOs
         [Required (ErrorMessage = "Quantity is required")]
         [Range(1, 10, ErrorMessage = "Quantity must be greater than 0")]
         public int Quantity { get; set; }
-        public decimal Discount { get; set; }
-
-        [Required (ErrorMessage = "Price is required")]
-        public decimal Price { get; set; }
 
         [Required (ErrorMessage = "Product ID is required")]
         [Range(1, int.MaxValue, ErrorMessage = "Product ID must be greater than 0")]

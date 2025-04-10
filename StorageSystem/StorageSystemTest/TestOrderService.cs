@@ -1,6 +1,7 @@
 ﻿using StorageSystem;
 using StorageSystem.Models;
 using StorageSystem.Services;
+using StorageSystem.Strategies;
 
 namespace StorageSystemTest
 {
@@ -8,7 +9,7 @@ namespace StorageSystemTest
     public sealed class TestOrderService
     {
         int quantity = 12;
-        decimal discount = 1.0m;
+        decimal discount = 0.05m; // 5%
         decimal price = 42.0m;
         int lastCreatedOrderID = 0;
 
@@ -28,6 +29,7 @@ namespace StorageSystemTest
                 ctx.Customers.Add(testCustomer);
                 ctx.SaveChanges();
 
+                testProduct.Price = price;
                 ctx.Products.Add(testProduct);
                 ctx.SaveChanges();
 
@@ -44,7 +46,7 @@ namespace StorageSystemTest
             int count = OrderService.Get().Count;
 
             // Test that the product is created correctly
-            Order order = OrderService.Create(testOrderList, testProduct, quantity, discount, price);
+            Order order = OrderService.Create(testOrderList, testProduct, quantity, new FlatDiscountStrategy(discount));
             Assert.IsTrue(order != null);
             Assert.IsTrue(order.ID > 0);
             Assert.AreEqual(quantity, order.Quantity);
@@ -56,6 +58,20 @@ namespace StorageSystemTest
 
             // Save the order ID for later use
             lastCreatedOrderID = order.ID;
+        }
+
+
+        [TestMethod]
+        public void CreateWithDiscount()
+        {
+            // Test that the product discount is created correctly
+            Order order = OrderService.Create(testOrderList, testProduct, quantity, new BulkStrategy(10, discount));
+            Assert.IsTrue(order != null);
+            Assert.IsTrue(order.ID > 0);
+            Assert.AreEqual(quantity, order.Quantity);
+            Assert.AreEqual(discount, order.Discount);
+
+            Assert.AreEqual(quantity * price * (1 - discount), OrderService.CalculateDiscountedPrice(order));
         }
 
         [TestMethod]
@@ -76,7 +92,7 @@ namespace StorageSystemTest
         public void Update()
         {
             // Create a new order
-            Order order = OrderService.Create(testOrderList, testProduct, 3, 1.22m, 123.45m);
+            Order order = OrderService.Create(testOrderList, testProduct, 3);
 
             // Update the order's price
             const decimal newPrice = 99.99m;

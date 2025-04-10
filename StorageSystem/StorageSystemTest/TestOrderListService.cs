@@ -81,7 +81,7 @@ namespace StorageSystemTest
             Assert.IsNotNull(orderList);
 
             // Create a test order
-            var order = OrderService.Create(orderList, testProduct, 1, 1, 1);
+            var order = OrderService.Create(orderList, testProduct, 1);
             orderList = OrderListService.AddOrder(orderList, order);
 
             // Ensure the order is added to the order list
@@ -101,9 +101,9 @@ namespace StorageSystemTest
 
             // Create test orders
             List<Order> orders = new() {
-                OrderService.Create(orderList, testProduct, 1, 1, 1),
-                OrderService.Create(orderList, testProduct, 2, 2, 2),
-                OrderService.Create(orderList, testProduct, 3, 3, 3)
+                OrderService.Create(orderList, testProduct, 1),
+                OrderService.Create(orderList, testProduct, 2),
+                OrderService.Create(orderList, testProduct, 3)
             };
             orderList = OrderListService.AddOrders(orderList, orders);
 
@@ -120,7 +120,7 @@ namespace StorageSystemTest
             Assert.IsNotNull(orderList);
 
             // Create a test order
-            var order = OrderService.Create(orderList, testProduct, 1, 1, 1);
+            var order = OrderService.Create(orderList, testProduct, 1);
             orderList = OrderListService.AddOrder(orderList, order);
 
             // Ensure the order is added to the order list

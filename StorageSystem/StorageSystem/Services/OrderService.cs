@@ -1,4 +1,5 @@
 ﻿using StorageSystem.Models;
+using StorageSystem.Strategies;
 
 namespace StorageSystem.Services
 {
@@ -16,15 +17,18 @@ namespace StorageSystem.Services
             return ctx.Orders.Where(o => o.ID == ID).SingleOrDefault();
         }
 
-        public static Order Create(OrderList list, Product p, int quantity, decimal discount, decimal price)
+        public static Order Create(OrderList list, Product p, int quantity, IDiscountStrategy? discountStrategy = null)
         {
             if (p.ID == 0)
                 throw new ArgumentException("Invalid product ID");
 
             ProductStatusService.Reserve(p.ID, quantity);
 
+            // Calculate a potential discount
+            decimal discount = (null != discountStrategy) ? discountStrategy.Calculate(p, quantity) : 0.0m;
+
             using var ctx = new StorageContext();
-            var order = new Order { Quantity = quantity, Discount = discount, Price = price, ProductID = p.ID, OrderListID = list.ID };
+            var order = new Order { Quantity = quantity, Price = p.Price, Discount = discount, ProductID = p.ID, OrderListID = list.ID };
             ctx.Orders.Add(order);
             ctx.OrderLists.Update(list);
             ctx.SaveChanges();
@@ -49,6 +53,13 @@ namespace StorageSystem.Services
 
             ProductStatusService.UndoReserve(order.ProductID, order.Quantity);
             return true;
+        }
+
+        public static decimal CalculateDiscountedPrice(Order order)
+        {
+            decimal price = order.Price * order.Quantity;
+            decimal discount = order.Discount;
+            return price - (price * discount);
         }
     }
 }

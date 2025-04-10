@@ -7,7 +7,7 @@ using StorageSystem.Models;
 
 namespace StorageSystem.Services
 {
-    class CustomerService 
+    public class CustomerService 
     {
         public static Customer? Get(int id)
         {

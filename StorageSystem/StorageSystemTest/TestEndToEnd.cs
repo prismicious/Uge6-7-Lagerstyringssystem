@@ -18,8 +18,10 @@ public class TestEndToEnd
     public void EndToEnd()
     {
         // Create 1 example product
+        var product = ProductService.Create(2.34m, "Example product", "-");
 
         // Create 2 warehouses
+        //var warehouse_1 = WarehouseService.
 
         // Create a product status for the product in both warehouses
 

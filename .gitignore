@@ -47,3 +47,5 @@
 *.~lock.*
 
 .vscode/
+StorageSystem/API/storage.sqlite-shm
+StorageSystem/API/storage.sqlite-wal

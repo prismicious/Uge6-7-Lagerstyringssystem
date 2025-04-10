@@ -27,4 +27,6 @@ app.UseHttpsRedirection(); // Redirects HTTP requests to HTTPS
 app.MapControllers(); // Maps incoming requests to controllers
 
 app.Run();
+
+FakerService.GenerateAndPopulate(100, 50); // Generates and populates the database with fake data
 public partial class Program { }

@@ -27,16 +27,16 @@ namespace StorageSystem.Services
                 return ctx.OrderLists
                     .Where(ol => ol.ID == ID)
                     .Include(ol => ol.Orders)
-                    .Single();
+                    .SingleOrDefault();
             }
         }
 
         // Creates an order list for a customer
-        public static OrderList Create(Customer customer)
+        public static OrderList Create(int customerID)
         {
             using (var ctx = new StorageContext())
             {
-                var orderList = new OrderList { CustomerID = customer.ID/*, Customer = customer*/ };
+                var orderList = new OrderList { CustomerID = customerID/*, Customer = customer*/ };
                 ctx.OrderLists.Add(orderList);
                 ctx.SaveChanges();
                 return orderList;

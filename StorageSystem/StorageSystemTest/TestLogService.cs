@@ -79,11 +79,7 @@ namespace StorageSystemTest
                     TransactionID = 1,
                     Transaction = null
                 },
-                Warehouse = new Warehouse
-                {
-                    ID = 2,
-                    Location = "Mock Location",
-                }
+                WarehouseID = 2
             }; 
 
             // Act
@@ -95,7 +91,7 @@ namespace StorageSystemTest
             Assert.IsTrue(lines.Length > 1); 
             Assert.IsTrue(lines[1].Contains(transaction.ID.ToString()));
             Assert.IsTrue(lines[1].Contains(transaction.Receipt.ID.ToString()));
-            Assert.IsTrue(lines[1].Contains(transaction.Warehouse.ID.ToString()));
+            Assert.IsTrue(lines[1].Contains(transaction.WarehouseID.ToString()));
         }
 
         [TestMethod]

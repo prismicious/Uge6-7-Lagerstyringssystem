@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using StorageSystem.Models;
+using StorageSystem.Helpers;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using StorageSystem.Models;
-
 namespace StorageSystem.Services
 {
     public class CustomerService
+    public class CustomerService 
     {
         public static Customer? Get(int id)
         {
@@ -42,7 +43,7 @@ namespace StorageSystem.Services
             }
         }
 
-        public static Customer? Create(string name, string email, string address, int type)
+        public static Customer? Create(string name, string email, string address, CustomerType type)
         {
             using (var ctx = new StorageContext())
             {

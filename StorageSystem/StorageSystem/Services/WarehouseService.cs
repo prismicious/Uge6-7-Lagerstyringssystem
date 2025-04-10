@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StorageSystem;
 using StorageSystem.Exceptions;
+using StorageSystem.Helpers;
 using StorageSystem.Models;
 
 namespace StorageSystem.Services
@@ -17,7 +18,7 @@ namespace StorageSystem.Services
             ctx.SaveChanges();
 
             // Create customer for the new warehouse
-            var wh_customer = new Customer { Address = location, Name = $"warehouse:{warehouse.ID}", Email = "internal@warehouse.storage", Type = 2 };
+            var wh_customer = new Customer { Address = location, Name = $"warehouse:{warehouse.ID}", Email = "internal@warehouse.storage", Type = CustomerType.Warehouse };
             ctx.Customers.Add(wh_customer);
             ctx.SaveChanges();
 
@@ -36,7 +37,7 @@ namespace StorageSystem.Services
         {
             using var ctx = new StorageContext();
             return ctx.Customers
-                .Where(c => c.Type == 2 && c.Name == $"warehouse:{wh.ID}")
+                .Where(c => c.Type == CustomerType.Warehouse && c.Name == $"warehouse:{wh.ID}")
                 .Single();
         }
 

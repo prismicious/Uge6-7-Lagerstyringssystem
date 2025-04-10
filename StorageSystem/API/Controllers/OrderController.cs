@@ -31,7 +31,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in GetAll(OrderController):{ex.Message}");
+                LogService.LogError($"Error in GetAll(OrderController):{ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -58,7 +58,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in GetByID(OrderController):{ex.Message}");
+                LogService.LogError($"Error in GetByID(OrderController):{ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -101,7 +101,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in Create(OrderController): {ex.Message}");
+                LogService.LogError($"Error in Create(OrderController): {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -123,11 +123,11 @@ namespace API.Controllers
                 if (updatedOrder)
                     return NoContent(); // Return 204 No Content if the update was successful
                 else
-                    return NotFound(); // Return 404 Not Found if the order was not found in the database
+                    return StatusCode(500, "Failed to update the order due to an internal error."); // Return 500 Internal Server Error
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error in Update: {e.Message}");
+                LogService.LogError($"Error in Update: {e.Message}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -148,7 +148,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in Delete(OrderController): {ex.Message}");
+                LogService.LogError($"Error in Delete(OrderController): {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }

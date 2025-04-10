@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bogus;
+using StorageSystem.Helpers;
 using StorageSystem.Models;
 
 namespace StorageSystem.Services
@@ -46,7 +47,7 @@ namespace StorageSystem.Services
                 .RuleFor(c => c.Name, f => f.Name.FullName())
                 .RuleFor(c => c.Email, f => f.Internet.Email())
                 .RuleFor(c => c.Address, f => f.Address.FullAddress())
-                .RuleFor(c => c.Type, f => f.Random.Number(0, 2)); // 0: Customer, 1: Business, 2: Warehouse
+                .RuleFor(c => c.Type, f => (CustomerType)f.Random.Number(0, 2)); // 0: Customer, 1: Business, 2: Warehouse
             var customers = customerFaker.Generate(customerCount);
 
             // Generate warehouses

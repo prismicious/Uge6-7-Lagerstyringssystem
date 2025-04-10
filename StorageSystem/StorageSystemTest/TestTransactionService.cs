@@ -19,7 +19,7 @@ public class TestTransactionService
             ctx.Warehouses.Add(warehouse1);
             ctx.SaveChanges();
 
-            var customer = new Customer { Name = "warehouse:1", Email = "test", Address = "test", Type = 2 };
+            var customer = new Customer { Name = "warehouse:1", Email = "test", Address = "test", Type = CustomerType.Warehouse };
             ctx.Customers.Add(customer);
             ctx.SaveChanges();
 

@@ -119,11 +119,8 @@ namespace API.Controllers
                 order.Discount = orderDTO.Discount;
                 order.Price = orderDTO.Price;
 
-                var updatedOrder = OrderService.Update(order);
-                if (updatedOrder)
-                    return NoContent(); // Return 204 No Content if the update was successful
-                else
-                    return StatusCode(500, "Failed to update the order due to an internal error."); // Return 500 Internal Server Error
+                OrderService.Update(order);
+                return NoContent(); // Return 204 No Content if the update was successful
             }
             catch (Exception e)
             {

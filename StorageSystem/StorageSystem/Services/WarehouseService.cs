@@ -36,7 +36,7 @@ namespace StorageSystem.Services
         {
             using var ctx = new StorageContext();
             return ctx.Customers
-                .Where(c => c.Name == $"warehouse:{wh.ID}")
+                .Where(c => c.Type == 2 && c.Name == $"warehouse:{wh.ID}")
                 .Single();
         }
 

@@ -4,6 +4,7 @@ using StorageSystem.Models;
 using StorageSystem.Services;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -65,22 +66,24 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] OrderDTO orderDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             try
             {
-                var orderList = OrderListService.Get(orderDTO.OrderListID);
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-                if (orderList == null)
-                    orderList = OrderListService.Create(orderDTO.Customer);
-
-
+                var customer = CustomerService.Get(orderDTO.CustomerID);
                 var product = ProductService.Get(orderDTO.ProductID);
 
-                if (product == null)
-                    // Product not found
-                    throw new Exception($"Product with ID {orderDTO.ProductID} not found.");
+                // Use EntityValidationHelper to check for nulls and return a combined error message
+                var notFoundMessage = EntityValidationHelper.GenerateNotFoundMessage(product, customer, orderDTO.ProductID, orderDTO.CustomerID);
+                if (!string.IsNullOrEmpty(notFoundMessage))
+                    return NotFound(notFoundMessage);
+
+                if (customer.Type != 0)
+                    return BadRequest("Order creation is only allowed for regular customers.");
+
+                var orderList = OrderListService.Get(orderDTO.OrderListID) ?? OrderListService.Create(orderDTO.CustomerID);
 
                 var createdOrder = OrderService.Create(orderList, product, orderDTO.Quantity, orderDTO.Discount, orderDTO.Price);
                 var addedOrder = OrderListService.AddOrder(orderList, createdOrder);
@@ -92,7 +95,7 @@ namespace API.Controllers
                     Price = createdOrder.Price,
                     ProductID = createdOrder.ProductID,
                     OrderListID = createdOrder.OrderListID,
-                    Customer = orderDTO.Customer
+                    CustomerID = customer.ID
                 };
                 return CreatedAtAction(nameof(GetByID), new { id = createdOrderDTO.ID }, createdOrderDTO);
             }
@@ -103,37 +106,41 @@ namespace API.Controllers
             }
         }
 
-        [HttpPatch]
-        public IActionResult Update([FromBody] OrderDTO orderDTO)
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] OrderDTO orderDTO)
         {
-            
-            var order = OrderService.Get(orderDTO.ID);
-            if (order == null)
-                return NotFound();
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             try
             {
-                if (!OrderService.Update(order))
+                var order = OrderService.Get(id);
+                if (order == null)
                     return NotFound();
+
+                order.Quantity = orderDTO.Quantity;
+                order.Discount = orderDTO.Discount;
+                order.Price = orderDTO.Price;
+
+                var updatedOrder = OrderService.Update(order);
+                if (updatedOrder)
+                    return NoContent(); // Return 204 No Content if the update was successful
                 else
-                    return NoContent();
+                    return NotFound(); // Return 404 Not Found if the order was not found in the database
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Console.WriteLine($"Error in Update(OrderController):{ex.Message}");
-                return StatusCode(500, ex.Message);
+                Console.WriteLine($"Error in Update: {e.Message}");
+                return StatusCode(500, e.Message);
             }
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(OrderDTO orderDTO)
+        public IActionResult Delete(int id)
         {
-            var order = OrderService.Get(orderDTO.ID);
             try
             {
+                var order = OrderService.Get(id);
+                if (order == null)
+                    return NotFound();
+
                 if (!OrderService.Remove(order))
                     return NotFound();
                 else

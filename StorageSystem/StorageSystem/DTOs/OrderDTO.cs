@@ -8,6 +8,7 @@ namespace StorageSystem.DTOs
         public int ID { get; set; }
 
         [Required (ErrorMessage = "Quantity is required")]
+        [Range(1, 10, ErrorMessage = "Quantity must be greater than 0")]
         public int Quantity { get; set; }
         public decimal Discount { get; set; }
 
@@ -20,6 +21,6 @@ namespace StorageSystem.DTOs
         public int OrderListID { get; set; }
 
         [Required (ErrorMessage = "Customer is required")]
-        public Customer Customer { get; set; }
+        public int CustomerID { get; set; }
     }
 }

@@ -16,7 +16,11 @@ namespace StorageSystem.Services
         {
             using (var ctx = new StorageContext())
             {
-                return ctx.Orders.Where(o => o.ID == ID).Single();
+                var order = ctx.Orders.Where(o => o.ID == ID).SingleOrDefault();
+                if (order == null)
+                    return null;
+                
+                return order;
             }
         }
 

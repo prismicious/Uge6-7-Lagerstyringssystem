@@ -30,16 +30,26 @@ public class IntegrationTestOrderAPI
         {
             ctx.Database.EnsureDeleted();
             ctx.Database.EnsureCreated();
-            Customer customer = new Customer() { ID = 1, Name = "John", Email = "JohnMadden@handegg.com", Address = "USA" };
+            Customer customer = new Customer() { Name = "John", Email = "JohnMadden@handegg.com", Address = "USA" };
+            Customer wh_customer = new Customer() { Name = "warehouse:1", Email = "test", Address = "test", Type = 2 };
             ctx.Customers.Add(customer);
+            ctx.Customers.Add(wh_customer);
             ctx.SaveChanges();
+            Assert.IsTrue(customer.ID > 0, "Test customer was not created.");
+
             Product testProduct = ProductService.Create(1.0m, "TestProduct", "BestInTestTest");
-            OrderList orderlist = OrderListService.Create(customer);
-            Order order1 = OrderService.Create(orderlist, testProduct, 50, 0, 100);
-            Order order2 = OrderService.Create(orderlist, testProduct, 500, 0, 1000);
-            Order order3 = OrderService.Create(orderlist, testProduct, 5000, 0, 2000);
+            OrderList orderlist = OrderListService.Create(customer.ID);
+            Order order1 = OrderService.Create(orderlist, testProduct, 50, 1, 100);
+            Order order2 = OrderService.Create(orderlist, testProduct, 500, 1, 1000);
+            Order order3 = OrderService.Create(orderlist, testProduct, 5000, 1, 2000);
 
             _testOrders = new List<Order> { order1, order2, order3 };
+            OrderListService.AddOrders(orderlist, _testOrders);
+
+            Assert.IsTrue(order1.ID > 0, "Test order was not created.");
+            Assert.IsTrue(order2.ID > 0, "Test order was not created.");
+            Assert.IsTrue(order3.ID > 0, "Test order was not created.");
+            Assert.IsTrue(ctx.OrderLists.Any(ol => ol.ID == orderlist.ID), "Test order list was not created.");
         }
     }
 
@@ -48,7 +58,7 @@ public class IntegrationTestOrderAPI
     public async Task GetAllOrders()
     {
         // Arrange 
-        string requestUri = "/api/Order";
+        string requestUri = "/api/order";
 
         //Act 
         var response = await _client.GetAsync(requestUri);
@@ -69,7 +79,7 @@ public class IntegrationTestOrderAPI
     public async Task GetOrderFromID()
     {
         // Arrange 
-        string requestUri = "/api/Order/1";
+        string requestUri = "/api/order/1";
 
         //Act 
         var response = await _client.GetAsync(requestUri);
@@ -88,22 +98,21 @@ public class IntegrationTestOrderAPI
     public async Task GetOrderFromNonExsistantRow()
     {
         // Arrange 
-        string requestUri = "/api/Order/4";
+        string requestUri = "/api/order/4";
 
         //Act 
         var response = await _client.GetAsync(requestUri);
-        var responseContent = await response.Content.ReadAsStringAsync();
-
         //Assert
-        Assert.AreEqual("Sequence contains no elements", responseContent);
+        Assert.IsFalse(response.IsSuccessStatusCode, "Requesting a non-existent order should not be successful.");
     }
     [TestMethod]
-    public async Task CreateOrder()
+    public async Task Create_ReturnsCreated()
     {
-        // Arrange
         using (var ctx = new StorageContext())
         {
             // Arrange
+            var customer = ctx.Customers.FirstOrDefault(c => c.ID == 1);
+
             OrderDTO dto = new OrderDTO()
             {
                 Quantity = 5,
@@ -111,17 +120,8 @@ public class IntegrationTestOrderAPI
                 Price = 100.0m,
                 ProductID = 1,
                 OrderListID = 0,
-                Customer = new Customer()
-                {
-                    ID = 1,
-                    Name = "John",
-                    Email = "John@doe.com",
-                    Address = "Teststreet 7",
-                    Type = 1 // Customer
-                }
+                CustomerID = customer.ID
             };
-
-            var customer = dto.Customer;
 
             // Act
             var json = JsonSerializer.Serialize(dto);
@@ -132,9 +132,128 @@ public class IntegrationTestOrderAPI
             //Assert
             response.EnsureSuccessStatusCode();
             responseContent.Contains(json);
-            Assert.IsTrue(responseContent.Contains(customer.Name), "Response content should contain the customer name.");
-            Assert.IsTrue(responseContent.Contains(customer.Address), "Response content should contain the customer address.");
-            Assert.IsTrue(responseContent.Contains(customer.Email), "Response content should contain the customer email.");
+
+            // Check if the customer was returned in the response
+            Assert.IsTrue(responseContent.Contains(customer.ID.ToString()), "Response content should contain the customer ID.");
+
+            // Check if the order was created in the database
+            Assert.IsTrue(ctx.Orders.Any(o => o.Quantity == dto.Quantity && o.Discount == dto.Discount && o.Price == dto.Price), "Order was not created in the database.");
+            Assert.IsTrue(ctx.OrderLists.Any(o => o.CustomerID == dto.CustomerID), "OrderList was not created in the database.");
+        }
+    }
+
+    [TestMethod]
+    public void CreateOrderWarehouseCustomer_ReturnsBadRequest()
+    {
+        // Arrange
+        using (var ctx = new StorageContext())
+        {
+            OrderDTO orderDTO = new OrderDTO()
+            {
+                Quantity = 5,
+                Discount = 0.0m,
+                Price = 100.0m,
+                ProductID = 1,
+                OrderListID = 0,
+                CustomerID = 2 // Assuming this is a warehouse customer ID
+            };
+
+            var json = JsonSerializer.Serialize(orderDTO);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var requestUri = "/api/order";
+
+            // Act
+            var response = _client.PostAsync(requestUri, content).Result;
+            var responseContent = response.Content.ReadAsStringAsync().Result;
+
+            // Assert
+            Assert.IsFalse(response.IsSuccessStatusCode, "Order creation should fail for warehouse customers.");
+            Assert.IsTrue(responseContent.Contains("Order creation is only allowed for regular customers."), "Response content should indicate that order creation is not allowed for warehouse customers.");
+        }
+
+    }
+    [TestMethod]
+    public async Task DeleteOrder_ReturnsNoContent()
+    {
+        // Arrange
+        var orderToDelete = _testOrders.First();
+        var requestUri = $"/api/order/{orderToDelete.ID}";
+
+        // Act
+        var response = await _client.DeleteAsync(requestUri);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        Assert.AreEqual(System.Net.HttpStatusCode.NoContent, response.StatusCode);
+
+        using (var ctx = new StorageContext())
+        {
+            Assert.IsFalse(ctx.Orders.Any(o => o.ID == orderToDelete.ID), "Order was not deleted from the database.");
+        }
+    }
+
+    
+
+    [TestMethod]
+    public async Task CreateOrder_InvalidInput_ReturnsBadRequest()
+    {
+        // Arrange
+        var invalidOrder = new OrderDTO
+        {
+            Quantity = -5, // Invalid quantity
+            Discount = 0.0m,
+            Price = 100.0m,
+            ProductID = 1,
+            OrderListID = 0,
+            CustomerID = 1
+        };
+
+        var json = JsonSerializer.Serialize(invalidOrder);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var requestUri = "/api/order";
+
+        // Act
+        var response = await _client.PostAsync(requestUri, content);
+
+        // Assert
+        Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdateOrder_ReturnsNoContent()
+    {
+        // Arrange
+        var orderToUpdate = _testOrders.First();
+        var updatedOrderDTO = new OrderDTO
+        {
+            ID = orderToUpdate.ID,
+            Quantity = 10, // Updated quantity
+            Discount = 5.0m, // Updated discount
+            Price = 200.0m, // Updated price
+            ProductID = orderToUpdate.ProductID,
+            OrderListID = orderToUpdate.OrderListID,
+            CustomerID = orderToUpdate.OrderList.CustomerID
+        };
+
+        var json = JsonSerializer.Serialize(updatedOrderDTO);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var requestUri = $"/api/order/{orderToUpdate.ID}";
+
+        // Act
+        var response = await _client.PutAsync(requestUri, content);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        Assert.AreEqual(System.Net.HttpStatusCode.NoContent, response.StatusCode);
+
+        using (var ctx = new StorageContext())
+        {
+            var updatedOrder = ctx.Orders.FirstOrDefault(o => o.ID == orderToUpdate.ID);
+            Assert.IsNotNull(updatedOrder, "Updated order should exist in the database.");
+            Assert.AreEqual(10, updatedOrder.Quantity, "Order quantity was not updated correctly.");
+            Assert.AreEqual(5.0m, updatedOrder.Discount, "Order discount was not updated correctly.");
+            Assert.AreEqual(200.0m, updatedOrder.Price, "Order price was not updated correctly.");
         }
     }
 

@@ -23,9 +23,9 @@ public class TestTransactionService
             ctx.Customers.Add(customer);
             ctx.SaveChanges();
 
-            var ol1 = OrderListService.Create(customer);
-            var ol2 = OrderListService.Create(customer);
-            var ol3 = OrderListService.Create(customer);
+            var ol1 = OrderListService.Create(customer.ID);
+            var ol2 = OrderListService.Create(customer.ID);
+            var ol3 = OrderListService.Create(customer.ID);
 
             var transaction1 = new Transaction
             {

@@ -7,7 +7,7 @@ using StorageSystem.Models;
 
 namespace StorageSystem.Services
 {
-    class CustomerService 
+    public class CustomerService
     {
         public static Customer? Get(int id)
         {
@@ -47,7 +47,8 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 Customer customer = new Customer { Name = name, Email = email, Address = address, Type = type };
-                if (null != ctx.Customers.Where(c => c.Email == email).SingleOrDefault())
+                bool exists = ctx.Customers.Any(c => c.Email == email);
+                if (exists)
                 {
                     return null;
                 }
@@ -56,8 +57,8 @@ namespace StorageSystem.Services
                 return customer;
             }
         }
-        
-        public static bool Delete(int ID) 
+
+        public static bool Delete(int ID)
         {
             if (ID == 0)
                 return false;

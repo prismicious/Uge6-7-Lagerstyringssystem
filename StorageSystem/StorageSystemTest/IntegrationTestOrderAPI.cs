@@ -113,6 +113,7 @@ public class IntegrationTestOrderAPI
                 OrderListID = 0,
                 Customer = new Customer()
                 {
+                    ID = 1,
                     Name = "John",
                     Email = "John@doe.com",
                     Address = "Teststreet 7",

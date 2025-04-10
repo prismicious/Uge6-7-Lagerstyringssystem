@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,11 +9,11 @@ namespace StorageSystem.Services
 {
     class CustomerService 
     {
-        public static Customer? GetCustomer(int id)
+        public static Customer? Get(int id)
         {
             using (var ctx = new StorageContext())
             {
-                return ctx.Customers.Where(p => p.ID == id).SingleOrDefault();
+                return ctx.Customers.Where(c => c.ID == id).SingleOrDefault();
             }
         }
         /*
@@ -30,9 +29,9 @@ namespace StorageSystem.Services
             }
         }
         */
-        public static bool UpdateCustomer(Customer customer)
+        public static bool Update(Customer customer)
         {
-            if (customer.ID == 0 || GetCustomer(customer.ID) == null)
+            if (customer.ID == 0 || Get(customer.ID) == null)
             {
                 return false;
             }
@@ -43,22 +42,26 @@ namespace StorageSystem.Services
             }
         }
 
-        public static Customer? CreateCustomer(string name, string email, string address, int type)
+        public static Customer? Create(string name, string email, string address, int type)
         {
             using (var ctx = new StorageContext())
             {
                 Customer customer = new Customer { Name = name, Email = email, Address = address, Type = type };
+                if (null != ctx.Customers.Where(c => c.Email == email).SingleOrDefault())
+                {
+                    return null;
+                }
                 ctx.Customers.Add(customer);
                 ctx.SaveChanges();
                 return customer;
             }
         }
         
-        public static bool DeleteCustomer(int ID) 
+        public static bool Delete(int ID) 
         {
             if (ID == 0)
                 return false;
-            Customer? customer = GetCustomer(ID);
+            Customer? customer = Get(ID);
             if (customer == null)
                 return false;
             using (var ctx = new StorageContext())

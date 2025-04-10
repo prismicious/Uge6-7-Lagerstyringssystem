@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace StorageSystem.Services
 {
-    public class CustomerService
     public class CustomerService 
     {
         public static Customer? Get(int id)

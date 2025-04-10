@@ -56,7 +56,7 @@ public class IntegrationTestOrderAPI
 
 
     [TestMethod]
-    public async Task GetAllOrders()
+    public async Task GetAllOrders_ReturnsOrders()
     {
         // Arrange 
         string requestUri = "/api/order";
@@ -77,7 +77,7 @@ public class IntegrationTestOrderAPI
     }
 
     [TestMethod]
-    public async Task GetOrderFromID()
+    public async Task GetOrderById_ReturnsOrder()
     {
         // Arrange 
         string requestUri = "/api/order/1";
@@ -96,7 +96,7 @@ public class IntegrationTestOrderAPI
     // I dont know if this is the correct way to handle requesting a nonexistant order.
     // Right now this test is just here to keep it in mind. 
     [TestMethod]
-    public async Task GetOrderFromNonExsistantRow()
+    public async Task GetOrderById_NonExistent_ReturnsNotFound()
     {
         // Arrange 
         string requestUri = "/api/order/4";
@@ -107,7 +107,7 @@ public class IntegrationTestOrderAPI
         Assert.IsFalse(response.IsSuccessStatusCode, "Requesting a non-existent order should not be successful.");
     }
     [TestMethod]
-    public async Task Create_ReturnsCreated()
+    public async Task CreateOrder_ReturnsCreated()
     {
         using (var ctx = new StorageContext())
         {
@@ -144,7 +144,7 @@ public class IntegrationTestOrderAPI
     }
 
     [TestMethod]
-    public void CreateOrderWarehouseCustomer_ReturnsBadRequest()
+    public void CreateOrder_WarehouseCustomer_ReturnsBadRequest()
     {
         // Arrange
         using (var ctx = new StorageContext())

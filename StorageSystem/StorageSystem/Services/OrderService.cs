@@ -12,15 +12,11 @@ namespace StorageSystem.Services
             }
         }
 
-        public static Order Get(int ID)
+        public static Order? Get(int ID)
         {
             using (var ctx = new StorageContext())
             {
-                var order = ctx.Orders.Where(o => o.ID == ID).SingleOrDefault();
-                if (order == null)
-                    return null;
-                
-                return order;
+                return ctx.Orders.Where(o => o.ID == ID).SingleOrDefault();
             }
         }
 

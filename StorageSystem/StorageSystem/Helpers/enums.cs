@@ -12,4 +12,12 @@ namespace StorageSystem.Helpers
         Return,
         Transfer
     }
+
+    public enum CustomerType
+    {
+        Normal,
+        Business,
+        Warehouse,
+        //Admin
+    }
 }

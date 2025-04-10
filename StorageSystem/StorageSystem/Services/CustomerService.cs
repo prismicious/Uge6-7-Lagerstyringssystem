@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using StorageSystem.Models;
+using StorageSystem.Helpers;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using StorageSystem.Models;
 
 namespace StorageSystem.Services
 {
@@ -42,7 +42,7 @@ namespace StorageSystem.Services
             }
         }
 
-        public static Customer? Create(string name, string email, string address, int type)
+        public static Customer? Create(string name, string email, string address, CustomerType type)
         {
             using (var ctx = new StorageContext())
             {

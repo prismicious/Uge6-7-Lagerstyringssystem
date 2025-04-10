@@ -14,12 +14,9 @@ namespace StorageSystem.Models
         // Optional receipt reference navigation
         public Receipt? Receipt { get; set; }
 
-        // Optional foreign key and reference navigation
-        public int? WarehouseID { get; set; }
-        //public Warehouse? Warehouse { get; set; }
         public override string ToString()
         {
-            return $"{ID},{Date},{Type},{OrderListID},{Receipt?.ID},{WarehouseID}";
+            return $"{ID},{Date},{Type},{OrderListID},{Receipt?.ID}";
         }
     }
 }

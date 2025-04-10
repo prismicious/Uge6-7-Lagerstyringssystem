@@ -32,7 +32,7 @@ public class IntegrationTestOrderAPI
             ctx.Database.EnsureDeleted();
             ctx.Database.EnsureCreated();
             Customer customer = new Customer() { Name = "John", Email = "JohnMadden@handegg.com", Address = "USA", Type = CustomerType.Normal };
-            Customer wh_customer = new Customer() { Name = "warehouse:1", Email = "test", Address = "test", Type = CustomerType.Warehouse };
+            Customer wh_customer = new Customer() { Name = "warehouse:1", Email = "test", Address = "test", Type = CustomerType.Business };
             ctx.Customers.Add(customer);
             ctx.Customers.Add(wh_customer);
             ctx.SaveChanges();

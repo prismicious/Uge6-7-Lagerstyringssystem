@@ -13,16 +13,10 @@ namespace StorageSystem.Services
             }
         }
 
-        static public ICollection<Transaction>? GetWarehouseTransactions(int warehouseId)
+        static public ICollection<Transaction>? Get()
         {
-            using (var ctx = new StorageContext())
-            {
-                Warehouse? warehouse = ctx.Warehouses
-                    .Include(w => w.Transactions)
-                    .SingleOrDefault(w => w.ID == warehouseId);
-
-                return warehouse?.Transactions;
-            }
+            using var ctx = new StorageContext();
+            return [.. ctx.Transactions];
         }
 
         static public Transaction Create(OrderList orderList, Helpers.TransactionType type)
@@ -49,14 +43,6 @@ namespace StorageSystem.Services
         static public Transaction CreateReturn(OrderList orderList)
         {
             return Create(orderList, Helpers.TransactionType.Return);
-        }
-
-        static public Transaction CreateWarehouseTransfer(OrderList orderList, Warehouse from)
-        {
-            var tx = Create(orderList, Helpers.TransactionType.Transfer);
-            tx.WarehouseID = from.ID;
-            //tx.Warehouse = from;
-            return tx;
         }
 
         static public Receipt CreateReceipt(Transaction tx)

@@ -15,13 +15,7 @@ public class TestTransactionService
             ctx.Database.EnsureDeleted();
             ctx.Database.EnsureCreated();
 
-            var warehouse1 = new Warehouse { Location = "Jylland" };
-            ctx.Warehouses.Add(warehouse1);
-            ctx.SaveChanges();
-
-            var customer = new Customer { Name = "warehouse:1", Email = "test", Address = "test", Type = CustomerType.Warehouse };
-            ctx.Customers.Add(customer);
-            ctx.SaveChanges();
+            var customer = CustomerService.Create("A", "A", "A", CustomerType.Normal);
 
             var ol1 = OrderListService.Create(customer.ID);
             var ol2 = OrderListService.Create(customer.ID);
@@ -32,24 +26,21 @@ public class TestTransactionService
                 ID = 1,
                 Date = DateTime.Now,
                 Type = TransactionType.Sale,
-                OrderListID = ol1.ID,
-                WarehouseID = warehouse1.ID
+                OrderListID = ol1.ID
             };
             var transaction2 = new Transaction
             {
                 ID = 2,
                 Date = DateTime.Now.AddDays(-1),
                 Type = TransactionType.Return,
-                OrderListID = ol2.ID,
-                WarehouseID = warehouse1.ID
+                OrderListID = ol2.ID
             };
             var transaction3 = new Transaction
             {
                 ID = 3,
                 Date = DateTime.Now.AddDays(-2),
-                Type = TransactionType.Transfer,
-                OrderListID = ol3.ID,
-                WarehouseID = warehouse1.ID
+                Type = TransactionType.StockRefill,
+                OrderListID = ol3.ID
             };
 
 
@@ -58,7 +49,6 @@ public class TestTransactionService
             ctx.Transactions.Add(transaction3);
             ctx.SaveChanges();
 
-            Assert.AreEqual(1, ctx.Warehouses.Count());
             Assert.AreEqual(3, ctx.Transactions.Count());
         }
     }
@@ -72,10 +62,9 @@ public class TestTransactionService
 
     }
     [TestMethod]
-    public void TestGetAllWareTransactions()
+    public void TestGetAllTransactions()
     {
-        var result = TransactionService.GetWarehouseTransactions(1);
-
+        var result = TransactionService.Get();
         Assert.AreEqual(3, result?.Count());
     }
 }

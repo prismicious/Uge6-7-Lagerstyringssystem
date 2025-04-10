@@ -22,6 +22,8 @@ namespace StorageSystem.Services
 
         public static Order Create(OrderList list, Product p, int quantity, decimal discount, decimal price)
         {
+            ProductStatusService.Reserve(p.ID, quantity);
+
             using (var ctx = new StorageContext())
             {
                 var order = new Order { Quantity = quantity, Discount = discount, Price = price, ProductID = p.ID, OrderListID = list.ID };
@@ -48,8 +50,12 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 ctx.Orders.Remove(order);
-                return 0 != ctx.SaveChanges();
+                if (0 == ctx.SaveChanges())
+                    return false;
             }
+
+            ProductStatusService.UndoReserve(order.ProductID, order.Quantity);
+            return true;
         }
     }
 }

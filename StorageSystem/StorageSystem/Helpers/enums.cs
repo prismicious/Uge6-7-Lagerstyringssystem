@@ -10,14 +10,13 @@ namespace StorageSystem.Helpers
     {
         Sale,
         Return,
-        Transfer
+        StockRefill
     }
 
     public enum CustomerType
     {
         Normal,
         Business,
-        Warehouse,
         //Admin
     }
 }

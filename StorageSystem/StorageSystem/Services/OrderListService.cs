@@ -43,11 +43,28 @@ namespace StorageSystem.Services
             }
         }
 
+        // Create an orderlist for moving product between warehouses
+        public static OrderList CreateForWarehouseMove(Warehouse destination)
+        {
+            using (var ctx = new StorageContext())
+            {
+                // Get the warehouse customer
+                var wh_cust = WarehouseService.GetAssociatedCustomer(destination);
+
+                // Create the order list
+                var orderList = new OrderList { CustomerID = wh_cust.ID };
+                ctx.OrderLists.Add(orderList);
+                ctx.SaveChanges();
+                return orderList;
+            }
+        }
+
         public static OrderList AddOrder(OrderList orderList, Order order)
         {
             using (var ctx = new StorageContext())
             {
                 orderList.Orders.Add(order);
+                ctx.OrderLists.Update(orderList);
                 ctx.SaveChanges();
                 return orderList;
             }
@@ -59,6 +76,7 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 orderList.Orders.Concat(orders);
+                ctx.OrderLists.Update(orderList);
                 ctx.SaveChanges();
                 return orderList;
             }
@@ -71,6 +89,7 @@ namespace StorageSystem.Services
             {
                 orderList.Orders.Remove(order);
                 ctx.Orders.Remove(order);
+                ctx.OrderLists.Update(orderList);
                 ctx.SaveChanges();
                 return orderList;
             }

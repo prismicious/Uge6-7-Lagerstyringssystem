@@ -58,5 +58,14 @@ namespace StorageSystem.Services
             //tx.Warehouse = from;
             return tx;
         }
+
+        static public Receipt CreateReceipt(Transaction tx)
+        {
+            using var ctx = new StorageContext();
+            Receipt receipt = new Receipt { TransactionID = tx.ID, Date = DateTime.Now };
+            ctx.Receipts.Add(receipt);
+            ctx.SaveChanges();
+            return receipt;
+        }
     }
 }

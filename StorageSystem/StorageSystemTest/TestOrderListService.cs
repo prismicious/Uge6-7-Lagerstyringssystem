@@ -62,7 +62,7 @@ namespace StorageSystemTest
         public void Create()
         {
             // Create an order list for the test customer
-            var orderList = OrderListService.Create(testCustomer);
+            var orderList = OrderListService.Create(testCustomer.ID);
             Assert.IsNotNull(orderList);
             Assert.IsTrue(orderList.ID > 0);
             Assert.AreEqual(testCustomer.ID, orderList.CustomerID);
@@ -77,7 +77,7 @@ namespace StorageSystemTest
         public void AddOrder()
         {
             // Create an order list for the test customer
-            var orderList = OrderListService.Create(testCustomer);
+            var orderList = OrderListService.Create(testCustomer.ID);
             Assert.IsNotNull(orderList);
 
             // Create a test order
@@ -96,7 +96,7 @@ namespace StorageSystemTest
         public void AddOrders()
         {
             // Create an order list for the test customer
-            var orderList = OrderListService.Create(testCustomer);
+            var orderList = OrderListService.Create(testCustomer.ID);
             Assert.IsNotNull(orderList);
 
             // Create test orders
@@ -116,7 +116,7 @@ namespace StorageSystemTest
         public void RemoveOrder()
         {
             // Create an order list for the test customer
-            var orderList = OrderListService.Create(testCustomer);
+            var orderList = OrderListService.Create(testCustomer.ID);
             Assert.IsNotNull(orderList);
 
             // Create a test order

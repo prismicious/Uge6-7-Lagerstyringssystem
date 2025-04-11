@@ -12,11 +12,11 @@ namespace StorageSystem.Services
             }
         }
 
-        public static Order Get(int ID)
+        public static Order? Get(int ID)
         {
             using (var ctx = new StorageContext())
             {
-                return ctx.Orders.Where(o => o.ID == ID).Single();
+                return ctx.Orders.Where(o => o.ID == ID).SingleOrDefault();
             }
         }
 
@@ -24,12 +24,9 @@ namespace StorageSystem.Services
         {
             using (var ctx = new StorageContext())
             {
-                if (list.Orders == null)
-                    list.Orders = new List<Order>();
-
                 var order = new Order { Quantity = quantity, Discount = discount, Price = price, ProductID = p.ID, OrderListID = list.ID };
-                list.Orders.Add(order);
                 ctx.Orders.Add(order);
+                ctx.OrderLists.Update(list);
                 ctx.SaveChanges();
                 return order;
             }
@@ -41,7 +38,7 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 ctx.Orders.Update(order);
-                return 1 == ctx.SaveChanges();
+                return 0 != ctx.SaveChanges();
             }
         }
 
@@ -51,7 +48,7 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 ctx.Orders.Remove(order);
-                return 1 == ctx.SaveChanges();
+                return 0 != ctx.SaveChanges();
             }
         }
     }

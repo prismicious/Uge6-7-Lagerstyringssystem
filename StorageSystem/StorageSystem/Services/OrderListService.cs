@@ -27,16 +27,32 @@ namespace StorageSystem.Services
                 return ctx.OrderLists
                     .Where(ol => ol.ID == ID)
                     .Include(ol => ol.Orders)
-                    .Single();
+                    .SingleOrDefault();
             }
         }
 
         // Creates an order list for a customer
-        public static OrderList Create(Customer customer)
+        public static OrderList Create(int customerID)
         {
             using (var ctx = new StorageContext())
             {
-                var orderList = new OrderList { CustomerID = customer.ID/*, Customer = customer*/ };
+                var orderList = new OrderList { CustomerID = customerID/*, Customer = customer*/ };
+                ctx.OrderLists.Add(orderList);
+                ctx.SaveChanges();
+                return orderList;
+            }
+        }
+
+        // Create an orderlist for moving product between warehouses
+        public static OrderList CreateForWarehouseMove(Warehouse destination)
+        {
+            using (var ctx = new StorageContext())
+            {
+                // Get the warehouse customer
+                var wh_cust = WarehouseService.GetAssociatedCustomer(destination);
+
+                // Create the order list
+                var orderList = new OrderList { CustomerID = wh_cust.ID };
                 ctx.OrderLists.Add(orderList);
                 ctx.SaveChanges();
                 return orderList;
@@ -48,6 +64,7 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 orderList.Orders.Add(order);
+                ctx.OrderLists.Update(orderList);
                 ctx.SaveChanges();
                 return orderList;
             }
@@ -59,6 +76,7 @@ namespace StorageSystem.Services
             using (var ctx = new StorageContext())
             {
                 orderList.Orders.Concat(orders);
+                ctx.OrderLists.Update(orderList);
                 ctx.SaveChanges();
                 return orderList;
             }
@@ -71,6 +89,7 @@ namespace StorageSystem.Services
             {
                 orderList.Orders.Remove(order);
                 ctx.Orders.Remove(order);
+                ctx.OrderLists.Update(orderList);
                 ctx.SaveChanges();
                 return orderList;
             }

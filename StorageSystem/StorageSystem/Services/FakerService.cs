@@ -50,14 +50,6 @@ namespace StorageSystem.Services
                 .RuleFor(c => c.Type, f => (CustomerType)f.Random.Number(0, 1)); // 0: Customer, 1: Business
             var customers = customerFaker.Generate(customerCount);
 
-
-            // Generate product statuses
-            var productStatuses = new Faker<ProductStatus>()
-                .RuleFor(ps => ps.ProductID, f => 1 + f.IndexFaker)
-                .RuleFor(ps => ps.Quantity, f => f.Random.Number(1, 100))
-                .RuleFor(ps => ps.Reserved, f => f.PickRandom(0, 1))
-                .Generate(productCount); // Generate product statuses for all products
-
                 
             using (var ctx = new StorageContext())
             {
@@ -66,10 +58,22 @@ namespace StorageSystem.Services
                 ctx.Customers.AddRange(customers);
                 ctx.SaveChanges();
 
+                LogService.Log($"Inserted {products.Count} products and {customers.Count} customers into the database.");
+            }
+
+
+            // Generate product statuses
+            int index = 0;
+            var productStatuses = new Faker<ProductStatus>()
+                .RuleFor(ps => ps.ProductID, f => products[index++].ID)
+                .RuleFor(ps => ps.Quantity, f => f.Random.Number(1, 100))
+                .RuleFor(ps => ps.Reserved, f => f.PickRandom(0, 1))
+                .Generate(productCount); // Generate product statuses for all products
+
+            using (var ctx = new StorageContext())
+            {
                 ctx.ProductStatuses.AddRange(productStatuses);
                 ctx.SaveChanges();
-
-                LogService.Log($"Inserted {products.Count} products and {customers.Count} customers into the database.");
             }
         }
         public static void Generate()

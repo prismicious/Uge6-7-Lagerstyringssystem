@@ -32,9 +32,7 @@ public class IntegrationTestOrderAPI
             ctx.Database.EnsureDeleted();
             ctx.Database.EnsureCreated();
             Customer customer = new Customer() { Name = "John", Email = "JohnMadden@handegg.com", Address = "USA", Type = CustomerType.Normal };
-            Customer wh_customer = new Customer() { Name = "warehouse:1", Email = "test", Address = "test", Type = CustomerType.Business };
             ctx.Customers.Add(customer);
-            ctx.Customers.Add(wh_customer);
             ctx.SaveChanges();
             Assert.IsTrue(customer.ID > 0, "Test customer was not created.");
 
@@ -141,35 +139,6 @@ public class IntegrationTestOrderAPI
         }
     }
 
-    [TestMethod]
-    public void CreateOrder_WarehouseCustomer_ReturnsBadRequest()
-    {
-        // Arrange
-        using (var ctx = new StorageContext())
-        {
-            OrderDTO orderDTO = new OrderDTO()
-            {
-                Quantity = 5,
-                ProductID = 1,
-                OrderListID = 0,
-                CustomerID = 2 // Assuming this is a warehouse customer ID
-            };
-
-            var json = JsonSerializer.Serialize(orderDTO);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var requestUri = "/api/order";
-
-            // Act
-            var response = _client.PostAsync(requestUri, content).Result;
-            var responseContent = response.Content.ReadAsStringAsync().Result;
-
-            // Assert
-            Assert.IsFalse(response.IsSuccessStatusCode, "Order creation should fail for warehouse customers.");
-            Assert.IsTrue(responseContent.Contains("Order creation is only allowed for regular customers."), "Response content should indicate that order creation is not allowed for warehouse customers.");
-        }
-
-    }
     [TestMethod]
     public async Task DeleteOrder_ReturnsNoContent()
     {

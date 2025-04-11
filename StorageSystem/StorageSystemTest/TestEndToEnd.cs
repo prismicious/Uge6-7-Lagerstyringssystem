@@ -20,20 +20,24 @@ public class TestEndToEnd
     public void EndToEnd()
     {
         // Create a customer
-        var customer = CustomerService.Create("Knud Karate", "cirkelspark@ansigt.dk", "Kindhestegade 23", CustomerType.Normal);
+        var customer = CustomerService.Create(
+            "Knud Karate",
+            "cirkelspark@ansigt.dk",
+            "Kindhestegade 23",
+            CustomerType.Normal);
         Assert.IsNotNull(customer);
 
         // Create an example product
         var product = ProductService.Create(2.34m, "Product Name", "Product Type");
 
         // Create a product status for the product.
-        // Add five.
+        // Add 5x product to the stock.
         var status = ProductStatusService.Create(product, 5);
         Assert.IsNotNull(status);
         Assert.AreEqual(5, ProductStatusService.Get(product)?.Quantity);
 
-        // Create an orderlist for the customer, with 1 order on it.
-        // This orders more product than exist in either warehouse.
+        // Create an order list for the customer, with 1 order on it.
+        // This orders more product than is in stock.
         var orderlist = OrderListService.Create(customer);
         var order = OrderService.Create(orderlist, product, 10);
 
@@ -48,8 +52,8 @@ public class TestEndToEnd
         // so create the final transaction
         var tx = TransactionService.CreateSale(orderlist);
 
-        // Create a receipt for the transaction.
-        // This happens when the warehouse ships out the product.
+        // When the warehouse ships out the product,
+        // create a receipt for the transaction.
         var receipt = TransactionService.CreateReceipt(tx);
     }
 }

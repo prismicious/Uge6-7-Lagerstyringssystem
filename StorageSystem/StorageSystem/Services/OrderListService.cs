@@ -20,7 +20,7 @@ namespace StorageSystem.Services
             }
         }
 
-        public static OrderList Get(int ID)
+        public static OrderList? Get(int ID)
         {
             using (var ctx = new StorageContext())
             {
@@ -32,32 +32,23 @@ namespace StorageSystem.Services
         }
 
         // Creates an order list for a customer
+        public static OrderList Create(Customer customer)
+        {
+            return Create(customer.ID);
+        }
+
+        // Creates an order list for a customer
         public static OrderList Create(int customerID)
         {
             using (var ctx = new StorageContext())
             {
-                var orderList = new OrderList { CustomerID = customerID/*, Customer = customer*/ };
+                var orderList = new OrderList { CustomerID = customerID };
                 ctx.OrderLists.Add(orderList);
                 ctx.SaveChanges();
                 return orderList;
             }
         }
 
-        // Create an orderlist for moving product between warehouses
-        public static OrderList CreateForWarehouseMove(Warehouse destination)
-        {
-            using (var ctx = new StorageContext())
-            {
-                // Get the warehouse customer
-                var wh_cust = WarehouseService.GetAssociatedCustomer(destination);
-
-                // Create the order list
-                var orderList = new OrderList { CustomerID = wh_cust.ID };
-                ctx.OrderLists.Add(orderList);
-                ctx.SaveChanges();
-                return orderList;
-            }
-        }
 
         public static OrderList AddOrder(OrderList orderList, Order order)
         {

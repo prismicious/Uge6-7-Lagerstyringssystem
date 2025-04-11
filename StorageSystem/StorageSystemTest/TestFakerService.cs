@@ -25,7 +25,6 @@ namespace StorageSystemTest
             // Arrange
             int productCount = 100;
             int customerCount = 50;
-            int warehouseCount = 5; 
             int productStatusCount = productCount;
 
             using (var context = new StorageContext())
@@ -38,7 +37,6 @@ namespace StorageSystemTest
                 // Assert
                 Assert.AreEqual(productCount, context.Products.Count(), "Products count mismatch");
                 Assert.AreEqual(customerCount, context.Customers.Count(), "Customers count mismatch");
-                Assert.AreEqual(warehouseCount, context.Warehouses.Count(), "Warehouses count mismatch");
                 Assert.AreEqual(productStatusCount, context.ProductStatuses.Count(), "Product statuses count mismatch");
             }
         }

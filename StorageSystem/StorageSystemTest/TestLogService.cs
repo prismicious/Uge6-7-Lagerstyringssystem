@@ -78,8 +78,7 @@ namespace StorageSystemTest
                     Date = DateTime.Now,
                     TransactionID = 1,
                     Transaction = null
-                },
-                WarehouseID = 2
+                }
             }; 
 
             // Act
@@ -91,7 +90,6 @@ namespace StorageSystemTest
             Assert.IsTrue(lines.Length > 1); 
             Assert.IsTrue(lines[1].Contains(transaction.ID.ToString()));
             Assert.IsTrue(lines[1].Contains(transaction.Receipt.ID.ToString()));
-            Assert.IsTrue(lines[1].Contains(transaction.WarehouseID.ToString()));
         }
 
         [TestMethod]

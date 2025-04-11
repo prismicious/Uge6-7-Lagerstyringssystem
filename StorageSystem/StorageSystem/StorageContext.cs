@@ -9,7 +9,6 @@ namespace StorageSystem
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductStatus> ProductStatuses { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<OrderList> OrderLists { get; set; }
         public DbSet<Receipt> Receipts { get; set; }

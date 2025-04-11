@@ -58,7 +58,7 @@ namespace StorageSystem.Services
 
             // Generate product statuses
             var productStatuses = new Faker<ProductStatus>()
-                .RuleFor(ps => ps.ProductID, f => f.Random.Number(1, productCount))
+                .RuleFor(ps => ps.ProductID, f => 1 + f.IndexFaker)
                 .RuleFor(ps => ps.Quantity, f => f.Random.Number(1, 100))
                 .RuleFor(ps => ps.Reserved, f => f.PickRandom(0, 1))
                 .Generate(productCount); // Generate product statuses for all products

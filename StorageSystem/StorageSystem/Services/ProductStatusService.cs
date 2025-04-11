@@ -25,7 +25,7 @@ namespace StorageSystem.Services
         }
 
         // Get all product statuses for a warehouse
-        public static List<ProductStatus>? Get()
+        public static List<ProductStatus> Get()
         {
             using var ctx = new StorageContext();
             return [.. ctx.ProductStatuses];

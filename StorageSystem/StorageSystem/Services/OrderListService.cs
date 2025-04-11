@@ -94,5 +94,16 @@ namespace StorageSystem.Services
                 return orderList;
             }
         }
+
+        // Calculate the total price of the order list
+        public static decimal CalculateTotalPrice(OrderList orderList)
+        {
+            decimal totalPrice = 0;
+            foreach (var order in orderList.Orders)
+            {
+                totalPrice += order.Price * order.Quantity * (1 - order.Discount);
+            }
+            return totalPrice;
+        }
     }
 }

@@ -134,5 +134,25 @@ namespace StorageSystemTest
             fetchedOrderList = OrderListService.Get(orderList.ID);
             Assert.IsFalse(fetchedOrderList.Orders.Any(o => o.ID == order.ID));
         }
+
+        [TestMethod]
+        public void CalculateTotalPrice()
+        {
+            // Create an order list for the test customer
+            var orderList = OrderListService.Create(testCustomer.ID);
+            Assert.IsNotNull(orderList);
+
+            // Create test orders
+            List<Order> orders = new() {
+                OrderService.Create(orderList, testProduct, 1, 0.1m, 1),
+                OrderService.Create(orderList, testProduct, 2, 0.2m, 2),
+                OrderService.Create(orderList, testProduct, 3, 0.3m, 3)
+            };
+            OrderListService.AddOrders(orderList, orders);
+
+            // Calculate the total price
+            decimal totalPrice = OrderListService.CalculateTotalPrice(orderList);
+            Assert.AreEqual(totalPrice, 1 * (1 - 0.1m) + 2 * 2 * (1 - 0.2m) + 3 * 3 * (1 - 0.3m));
+        }
     }
 }

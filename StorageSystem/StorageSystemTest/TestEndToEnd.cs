@@ -46,7 +46,7 @@ public class TestEndToEnd
 
         // Create an orderlist for the customer, with 1 order on it.
         // This orders more product than exist in either warehouse.
-        var orderlist = OrderListService.Create(customer);
+        var orderlist = OrderListService.Create(customer.ID);
         var order = OrderService.Create(orderlist, product, 10, 0, product.Price);
 
         

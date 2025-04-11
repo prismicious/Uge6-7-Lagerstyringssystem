@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StorageSystem.Models;
+using System.Xml;
 
 namespace StorageSystem
 {
@@ -16,5 +17,19 @@ namespace StorageSystem
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite("Data Source=storage.sqlite");
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Only allow one customers with same email
+            modelBuilder.Entity<Customer>()
+                .HasIndex(c => c.Email)
+                .IsUnique();
+
+            // Only allow one product status per product
+            modelBuilder.Entity<ProductStatus>()
+                .HasIndex(ps => ps.ProductID)
+                .IsUnique();
+        }
+
     }
 }

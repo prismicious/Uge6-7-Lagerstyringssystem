@@ -32,7 +32,7 @@ public class IntegrationTestOrderAPI
             ctx.Database.EnsureDeleted();
             ctx.Database.EnsureCreated();
             Customer customer = new Customer() { Name = "John", Email = "JohnMadden@handegg.com", Address = "USA", Type = CustomerType.Normal };
-            Customer wh_customer = new Customer() { Name = "warehouse:1", Email = "test", Address = "test", Type = CustomerType.Warehouse };
+            Customer wh_customer = new Customer() { Name = "warehouse:1", Email = "test", Address = "test", Type = CustomerType.Business };
             ctx.Customers.Add(customer);
             ctx.Customers.Add(wh_customer);
             ctx.SaveChanges();
@@ -40,9 +40,9 @@ public class IntegrationTestOrderAPI
 
             Product testProduct = ProductService.Create(1.0m, "TestProduct", "BestInTestTest");
             OrderList orderlist = OrderListService.Create(customer.ID);
-            Order order1 = OrderService.Create(orderlist, testProduct, 50, 1, 100);
-            Order order2 = OrderService.Create(orderlist, testProduct, 500, 1, 1000);
-            Order order3 = OrderService.Create(orderlist, testProduct, 5000, 1, 2000);
+            Order order1 = OrderService.Create(orderlist, testProduct, 50);
+            Order order2 = OrderService.Create(orderlist, testProduct, 500);
+            Order order3 = OrderService.Create(orderlist, testProduct, 5000);
 
             _testOrders = new List<Order> { order1, order2, order3 };
             OrderListService.AddOrders(orderlist, _testOrders);
@@ -117,8 +117,6 @@ public class IntegrationTestOrderAPI
             OrderDTO dto = new OrderDTO()
             {
                 Quantity = 5,
-                Discount = 0.0m,
-                Price = 100.0m,
                 ProductID = 1,
                 OrderListID = 0,
                 CustomerID = customer.ID
@@ -138,7 +136,7 @@ public class IntegrationTestOrderAPI
             Assert.IsTrue(responseContent.Contains(customer.ID.ToString()), "Response content should contain the customer ID.");
 
             // Check if the order was created in the database
-            Assert.IsTrue(ctx.Orders.Any(o => o.Quantity == dto.Quantity && o.Discount == dto.Discount && o.Price == dto.Price), "Order was not created in the database.");
+            Assert.IsTrue(ctx.Orders.Any(o => o.Quantity == dto.Quantity), "Order was not created in the database.");
             Assert.IsTrue(ctx.OrderLists.Any(o => o.CustomerID == dto.CustomerID), "OrderList was not created in the database.");
         }
     }
@@ -152,8 +150,6 @@ public class IntegrationTestOrderAPI
             OrderDTO orderDTO = new OrderDTO()
             {
                 Quantity = 5,
-                Discount = 0.0m,
-                Price = 100.0m,
                 ProductID = 1,
                 OrderListID = 0,
                 CustomerID = 2 // Assuming this is a warehouse customer ID
@@ -203,8 +199,6 @@ public class IntegrationTestOrderAPI
         var invalidOrder = new OrderDTO
         {
             Quantity = -5, // Invalid quantity
-            Discount = 0.0m,
-            Price = 100.0m,
             ProductID = 1,
             OrderListID = 0,
             CustomerID = 1
@@ -230,8 +224,6 @@ public class IntegrationTestOrderAPI
         {
             ID = orderToUpdate.ID,
             Quantity = 10, // Updated quantity
-            Discount = 5.0m, // Updated discount
-            Price = 200.0m, // Updated price
             ProductID = orderToUpdate.ProductID,
             OrderListID = orderToUpdate.OrderListID,
             CustomerID = orderToUpdate.OrderList.CustomerID
@@ -253,9 +245,6 @@ public class IntegrationTestOrderAPI
             var updatedOrder = ctx.Orders.FirstOrDefault(o => o.ID == orderToUpdate.ID);
             Assert.IsNotNull(updatedOrder, "Updated order should exist in the database.");
             Assert.AreEqual(10, updatedOrder.Quantity, "Order quantity was not updated correctly.");
-            Assert.AreEqual(5.0m, updatedOrder.Discount, "Order discount was not updated correctly.");
-            Assert.AreEqual(200.0m, updatedOrder.Price, "Order price was not updated correctly.");
         }
     }
-
 }

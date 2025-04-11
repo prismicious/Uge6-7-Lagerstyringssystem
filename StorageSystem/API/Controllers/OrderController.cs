@@ -22,8 +22,6 @@ namespace API.Controllers
                 {
                     ID = o.ID,
                     Quantity = o.Quantity,
-                    Discount = o.Discount,
-                    Price = o.Price,
                     ProductID = o.ProductID,
                     OrderListID = o.OrderListID
                 });
@@ -49,8 +47,6 @@ namespace API.Controllers
                 {
                     ID = order.ID,
                     Quantity = order.Quantity,
-                    Discount = order.Discount,
-                    Price = order.Price,
                     ProductID = order.ProductID,
                     OrderListID = order.OrderListID
                 };
@@ -73,26 +69,29 @@ namespace API.Controllers
                     return BadRequest(ModelState);
 
                 var customer = CustomerService.Get(orderDTO.CustomerID);
+                if (customer == null)
+                    return NotFound($"Customer with ID {orderDTO.CustomerID} not found.");
+                if (customer.Type != 0)
+                    return BadRequest("Order creation is only allowed for regular customers.");
+
                 var product = ProductService.Get(orderDTO.ProductID);
+                if (product == null)
+                    return NotFound($"Product with ID {orderDTO.ProductID} not found.");
 
                 // Use EntityValidationHelper to check for nulls and return a combined error message
                 var notFoundMessage = EntityValidationHelper.GenerateNotFoundMessage(product, customer, orderDTO.ProductID, orderDTO.CustomerID);
                 if (!string.IsNullOrEmpty(notFoundMessage))
                     return NotFound(notFoundMessage);
 
-                if (customer.Type != 0)
-                    return BadRequest("Order creation is only allowed for regular customers.");
 
                 var orderList = OrderListService.Get(orderDTO.OrderListID) ?? OrderListService.Create(orderDTO.CustomerID);
 
-                var createdOrder = OrderService.Create(orderList, product, orderDTO.Quantity, orderDTO.Discount, orderDTO.Price);
+                var createdOrder = OrderService.Create(orderList, product, orderDTO.Quantity);
                 var addedOrder = OrderListService.AddOrder(orderList, createdOrder);
                 var createdOrderDTO = new OrderDTO
                 {
                     ID = createdOrder.ID,
                     Quantity = createdOrder.Quantity,
-                    Discount = createdOrder.Discount,
-                    Price = createdOrder.Price,
                     ProductID = createdOrder.ProductID,
                     OrderListID = createdOrder.OrderListID,
                     CustomerID = customer.ID
@@ -116,8 +115,6 @@ namespace API.Controllers
                     return NotFound();
 
                 order.Quantity = orderDTO.Quantity;
-                order.Discount = orderDTO.Discount;
-                order.Price = orderDTO.Price;
 
                 OrderService.Update(order);
                 return NoContent(); // Return 204 No Content if the update was successful
